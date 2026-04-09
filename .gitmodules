@@ -1,0 +1,6 @@
+[submodule "undrllai"]
+	path = undrllai
+	url = git@github.com:UnderUndre/undrllai.git
+[submodule "underproxy"]
+	path = underproxy
+	url = git@github.com:UnderUndre/underproxy.git
