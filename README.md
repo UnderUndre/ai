@@ -1,31 +1,99 @@
 # AI Helpers
 
-## English
+A collection of prompts, agents, skills, and a CLI tool for AI-assisted development. Write once in Claude format, sync to GitHub Copilot and Google Gemini automatically.
 
-**One-liner:**  
-A collection of prompts, tools, and resources for AI agent development and prompt engineering.
+[Русская версия](README.ru.md)
 
----
+## What's Inside
 
-## ✨ Features
+```
+.claude/          # Source of truth: commands, agents, skills
+.github/          # Copilot prompts & instructions (auto-generated)
+.gemini/          # Gemini commands & agents (auto-generated)
+packages/cli/     # CLI tool that does the transpilation
+specs/            # Feature specifications and design docs
+```
 
-- Curated AI agent prompts and system instructions
-- Ready-to-use prompt templates for various LLMs
-- Documentation and guides for prompt engineering
-- Multi-language support
+## CLI Tool: `underundre-ai-helpers-cli`
 
----
+The core of this repo. Treats `.claude/` as the single source of truth and transpiles it into Copilot and Gemini formats.
 
-## Russian
+### Install in your project
 
-**Одной строкой:**  
-Коллекция промптов, инструментов и ресурсов для разработки AI-агентов и инженерии промптов.
+```bash
+npx underundre-ai-helpers-cli init --source github:UnderUndre/ai
+```
 
----
+This will generate `.claude/`, `.github/prompts/`, `.github/instructions/`, `.gemini/commands/`, `.gemini/agents/`, `CLAUDE.md`, `GEMINI.md`, and a `helpers-lock.json` lock file.
 
-## ✨ Возможности
+### Update
 
-- Подборка промптов и системных инструкций для AI-агентов
-- Готовые шаблоны промптов для разных LLM
-- Документация и гайды по инженерии промптов
-- Мультиязычная поддержка
+```bash
+npx underundre-ai-helpers-cli sync --upgrade
+```
+
+### CI drift detection
+
+```bash
+npx underundre-ai-helpers-cli status --strict
+# Exit code 2 = someone edited a managed file
+```
+
+### Selective targets
+
+```bash
+# Only Claude (skip Copilot/Gemini)
+npx underundre-ai-helpers-cli init --source github:UnderUndre/ai --targets claude
+
+# Add Copilot later
+npx underundre-ai-helpers-cli add-target copilot
+```
+
+Full CLI documentation: [packages/cli/README.md](packages/cli/README.md)
+
+## What Gets Synced
+
+| Source (`.claude/`) | Copilot (`.github/`) | Gemini (`.gemini/`) |
+|---------------------|----------------------|---------------------|
+| `commands/*.md` | `prompts/*.prompt.md` | `commands/*.toml` |
+| `agents/*.md` | `instructions/*.instructions.md` | `agents/*.md` |
+| `CLAUDE.md` | `copilot-instructions.md` | `GEMINI.md` |
+| `skills/**/*` | -- (Claude-specific) | -- (Claude-specific) |
+
+7 built-in transformers handle the format conversion. Custom transformers can be added for other targets (Cursor, Windsurf, etc.).
+
+## Protected Slots
+
+Inject project-specific content that survives across syncs:
+
+```md
+<!-- HELPERS:CUSTOM START -->
+Your custom content here. Never overwritten by sync.
+<!-- HELPERS:CUSTOM END -->
+```
+
+## Project Structure
+
+| Directory | Purpose |
+|-----------|---------|
+| `.claude/commands/` | Claude Code slash commands (53 commands) |
+| `.claude/agents/` | Specialist agent definitions (27 agents) |
+| `.claude/skills/` | Reusable skill modules (160 files) |
+| `packages/cli/` | The `underundre-ai-helpers-cli` npm package |
+| `specs/` | Feature specs, plans, contracts, tasks |
+
+## Development
+
+```bash
+# CLI tool
+cd packages/cli
+npm install
+npm test        # 128 tests
+npm run build   # Compile to dist/
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## License
+
+MIT
