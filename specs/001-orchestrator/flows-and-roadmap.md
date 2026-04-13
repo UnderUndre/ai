@@ -19,6 +19,7 @@
 **Sequential** (safe): run one, merge, run next on updated main.
 
 **Parallel** (needs `--base` flag, NOT YET IMPLEMENTED):
+
 ```bash
 orch run "Feature A" --base main        # -> orch/run-abc123
 orch run "Feature B" --base orch/run-abc123  # starts on top of A
@@ -38,9 +39,11 @@ orch run "Feature B" --base orch/run-abc123  # starts on top of A
 **Rule**: If fix touches >3 files or root cause is unclear, create at least a minimal spec.
 
 **Proposed**: `orch fix` quick mode (NOT YET IMPLEMENTED):
+
 ```bash
 orch fix "Race condition in worktree creation" --files src/worktree/manager.ts
 ```
+
 **Safety**: Even quick fixes MUST use a temporary branch or worktree. Direct edits to working tree = risk of corruption if tool hallucinates.
 
 ### Flow 4: Other Scenarios
@@ -90,6 +93,7 @@ orch review --branch feature-x [--tools gemini,copilot,opencode]
 ```
 
 **Output**:
+
 ```
 Review Results for feature-x (3 reviewers):
 
@@ -107,6 +111,7 @@ Consolidated feedback:
 **Why P1**: This is the simplest multi-model feature. No pipeline integration, no retries, no worktrees. Just: get diff → spawn N tools → collect feedback → display. And the review engine it builds becomes the foundation for P2.
 
 **Implementation**:
+
 - `src/engine/review.ts` -- new module: parallel review dispatch + result aggregation
 - `src/parsers/review-merger.ts` -- deduplicate and structure multi-model feedback
 - `src/index.ts` -- new `orch review` command
@@ -114,6 +119,7 @@ Consolidated feedback:
 - `.claude/commands/orch.review.md` -- slash command for Claude Code
 
 **Claude Code slash command** (`/orch.review`):
+
 ```
 /orch.review feature-x
 /orch.review --tools gemini,copilot
@@ -121,6 +127,7 @@ Consolidated feedback:
 ```
 
 The command calls `orch_review` MCP tool which:
+
 1. Gets the diff (merge-base by default, per ADR-003)
 2. Dispatches N reviewers in parallel
 3. Collects votes + feedback
@@ -156,6 +163,7 @@ pipeline:
 **Arbiter model**: When votes are split, the arbiter (typically the most capable model) makes the final call.
 
 **Arbiter fallback** (if arbiter unavailable):
+
 1. Arbiter tool health-checked before ensemble dispatch
 2. If unhealthy → fall back to `majority` strategy for this stage
 3. Log warning: "arbiter unavailable, using majority fallback"
@@ -165,24 +173,28 @@ pipeline:
 
 **Contradictory feedback resolution**:
 When reviewers directly contradict (e.g., Gemini: "reject — insecure", Claude: "approve — security is fine"):
+
 1. Tag each feedback item with confidence: `required` (security, correctness) vs. `suggestion` (style, naming)
 2. Security/correctness concerns from ANY reviewer always escalate — treated as required regardless of votes
-3. If contradiction is on a factual claim, arbiter verifies (or falls back to "apply the stricter interpretation")
+3. If contradiction is on a factual clai-helpersm, arbiter verifies (or falls back to "apply the stricter interpretation")
 4. Style/preference contradictions → majority wins, losers' feedback dropped
 
 **Feedback merge on REJECT**:
+
 1. Collect all REJECT feedbacks
 2. Pass through a **summarizer model** (not just concatenate) to deduplicate and resolve contradictions
 3. Output: structured list of `required` changes vs. `suggestions`
 4. Feed as single combined feedback into retry
 
 **Cost control**: N reviewers = N x cost. Mitigations:
+
 - Default ensemble size: 2 (not 5) — diminishing returns past 3
 - `--review-budget <usd>` flag caps total spend
 - Cheaper models for first pass, expensive only as arbiter
 - Skip ensemble for low-risk stages (e.g., `review-tasks` rarely needs 3 reviewers)
 
 **Implementation**: Requires changes to:
+
 - `src/config/schema.ts` -- pipeline stage config becomes `string | EnsembleReviewConfig`
 - `src/engine/pipeline.ts` -- review execution dispatches to N tools in parallel
 - Reuses `src/engine/review.ts` from P1
@@ -199,6 +211,7 @@ orch fix "Description" --files src/a.ts src/b.ts [--tool claude]
 ```
 
 **Implementation**: New command in `src/index.ts` that:
+
 1. Creates a temporary branch (NEVER direct edits to working tree)
 2. Reads specified files as context
 3. Spawns one tool with fix prompt + file contents
@@ -207,22 +220,26 @@ orch fix "Description" --files src/a.ts src/b.ts [--tool claude]
 6. `--auto-merge` flag available but prints warning: "Auto-merge skips human review"
 
 **Safeguards** (from Qwen review):
+
 - Operator always sees the diff before merge (unless `--auto-merge`)
 - If fix touches files NOT in `--files` list → warn per ADR-005 (hard stop + allowlist)
 - Prompt includes explicit instruction: "This is a targeted fix, not a refactor. Do not change unrelated code."
 - One bug can be a symptom of a deeper issue — `orch fix` output includes: "Consider running full analysis if this area has recurring bugs"
 
 **Additional implementation**:
+
 - `src/mcp/server.ts` -- new `orch_fix` MCP tool
 - `.claude/commands/orch.fix.md` -- slash command for Claude Code
 
 **Claude Code slash command** (`/orch.fix`):
+
 ```
 /orch.fix Race condition in worktree creation --files src/worktree/manager.ts
 /orch.fix Missing null check in config loader --files src/config/loader.ts --tool claude
 ```
 
 The command calls `orch_fix` MCP tool which:
+
 1. Creates temporary branch from HEAD
 2. Reads `--files` as context, passes to the tool
 3. Spawns single tool with targeted fix prompt
@@ -241,12 +258,14 @@ orch run "Feature B" --base orch/run-abc123
 Creates worktrees from the specified base branch instead of HEAD.
 
 **`UNSTABLE_BASE` tracking**: If the base branch hasn't been merged to main:
+
 - Mark the run as `UNSTABLE_BASE` in DB
 - Warn operator before merge: "Base branch orch/run-abc123 is not yet in main"
 - If base branch fails later, cascade-notify dependent runs
 
 **Rollback mechanism** (from Qwen review):
 When base branch (Feature A) fails after dependent (Feature B) started:
+
 1. `UNSTABLE_BASE` runs get status `BASE_FAILED`
 2. `orch status` shows: "Run xyz depends on failed base orch/run-abc123"
 3. `orch rebase --run xyz --base main` re-applies Feature B's changes on updated main (may conflict)
@@ -272,6 +291,7 @@ When different models handle different pipeline stages (Claude writes spec, Gemi
 **Proposed**: `run_context.json` per run that accumulates stage outputs and review feedback. Each stage prompt includes relevant prior context, not just artifact paths.
 
 **Size limits** (from Qwen review): Context can grow unbounded on complex features.
+
 - Max context per stage injection: 8KB (configurable via `defaults.maxContextBytes`)
 - Strategy: most recent stages first, oldest truncated
 - Review feedback: keep only `required` items, drop `suggestions` from prior stages
@@ -355,6 +375,7 @@ interface ReviewItem {
 ```
 
 **Gate computation**:
+
 - If ANY item has `severity: "required"` AND `category: "security" | "correctness"` → `gate: "blocked"` regardless of vote
 - Otherwise → `gate` follows the vote
 - This means: APPROVE with a style suggestion = pass. APPROVE with a security concern = blocked.
@@ -455,11 +476,13 @@ orch run "Feature X" --review-budget 5.00
 **Decision**: Hard stop with allowlist for adjacent files.
 
 **Allowed modifications outside `--files`**:
+
 - Test files that import the target file (e.g., `--files src/auth.ts` → `tests/auth.test.ts` is OK)
 - Type definition files directly imported by target (`types.ts`, `schema.ts`)
 - Lock files (`package-lock.json`) if dependencies changed
 
 **Everything else**: Hard stop. Show diff of unexpected changes, ask operator:
+
 ```
 WARNING: Tool modified files outside scope:
   + src/middleware/cors.ts (not in --files, not a test/type file)
@@ -497,6 +520,7 @@ This avoids the complexity explosion of DAG traversal, cascade status propagatio
 **Decision**: Structured summaries by default. Raw artifacts via `--debug-context` flag.
 
 **Default content** (per stage entry):
+
 ```json
 {
   "stage": "review-spec",

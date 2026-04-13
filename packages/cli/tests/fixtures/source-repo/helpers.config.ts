@@ -1,4 +1,4 @@
-import { defineHelpersConfig } from "clai";
+import { defineHelpersConfig } from "clai-helpers";
 
 export default defineHelpersConfig({
   version: 1,

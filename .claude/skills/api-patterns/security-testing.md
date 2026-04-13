@@ -29,7 +29,7 @@
 |-------|--------------|
 | Algorithm | None, algorithm confusion |
 | Secret | Weak secrets, brute force |
-| Claims | Expiration, issuer, audience |
+| clai-helpersms | Expiration, issuer, audience |
 | Signature | Manipulation, key injection |
 
 ### Session Testing
@@ -99,20 +99,24 @@
 ## Security Testing Checklist
 
 **Authentication:**
+
 - [ ] Test for bypass
 - [ ] Check credential strength
 - [ ] Verify token security
 
 **Authorization:**
+
 - [ ] Test BOLA/IDOR
 - [ ] Check privilege escalation
 - [ ] Verify function access
 
 **Input:**
+
 - [ ] Test all parameters
 - [ ] Check for injection
 
 **Config:**
+
 - [ ] Check CORS
 - [ ] Verify headers
 - [ ] Test error handling

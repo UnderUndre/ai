@@ -60,6 +60,7 @@ As a developer starting a new AI-assisted TypeScript project, I want to quickly 
 **Why this priority**: Essential for the "reuse" goal. If setup is hard, developers won't use it.
 
 **Independent Test**: Run `npx underundre-helpers init` in a fresh empty directory. Verify:
+
 1. `.claude/` is populated with all source files from the latest tag.
 2. `.github/prompts/`, `.github/instructions/`, `.github/copilot-instructions.md` are generated from `.claude/` content.
 3. `.gemini/commands/`, `.gemini/agents/`, `GEMINI.md` are generated.
@@ -88,6 +89,7 @@ As a maintainer of multiple projects, I want to update the shared persona, comma
 **Why this priority**: Solves the "Sync" requirement and prevents fragmentation across AI tools.
 
 **Independent Test**:
+
 1. In source repo: edit `.claude/commands/commit.md`, tag `v1.1.0`.
 2. In a downstream repo previously initialized at `v1.0.0`, ensure `CLAUDE.md` contains a Protected Slot block with project-specific text.
 3. Run `npx underundre-helpers sync --upgrade`.
@@ -307,6 +309,7 @@ As a developer who only uses Claude Code (not Copilot or Gemini), I want to skip
 #### Lock File
 
 - **FR-016**: Tool MUST maintain `helpers-lock.json` at the target project root. Schema:
+
   ```json
   {
     "schema": 1,
@@ -355,6 +358,7 @@ As a developer who only uses Claude Code (not Copilot or Gemini), I want to skip
     ]
   }
   ```
+
   - `sourceCanonicalHash` / `localCanonicalHash` are defined in FR-018b.
   - `slotsHash` is optional (present only on files with ≥1 slot), informational only.
   - `renderedHash` / `localRenderedHash` apply to generated files only.
@@ -383,7 +387,7 @@ As a developer who only uses Claude Code (not Copilot or Gemini), I want to skip
 
 - **FR-019** (Per-file atomic writes): Tool MUST use per-file atomic writes. Staging directory MUST be located at **`<target-project-root>/.helpers/staging/`** — explicitly inside the target project root — to guarantee same-volume semantics for `fs.rename`. If `fs.rename` still returns `EXDEV` (e.g., bind-mounts, overlay filesystems, container edge cases), the tool MUST fall back to `copy + fsync + unlink(src)` with the same pre-rename lock on the destination. Tool MUST NOT use a system-temp directory (e.g., `/tmp`, `%TEMP%`) for staging of final writes.
 
-- **FR-020** (Whole-sync recoverability via Write-Ahead Journal): The tool does **NOT** claim whole-tree transactional atomicity — per-file `rename` cannot provide that. Instead:
+- **FR-020** (Whole-sync recoverability via Write-Ahead Journal): The tool does **NOT** clai-helpersm whole-tree transactional atomicity — per-file `rename` cannot provide that. Instead:
   1. Before any file mutation, the tool writes a **Write-Ahead Journal** at `<target-project-root>/.helpers/journal.json` containing: run id, plan of operations (ordered list of `{op: write|delete|rename, path, stagedPath?, backupPath?}`), starting lock state hash, target lock state hash. Journal is fsync'd before proceeding.
   2. For every file that will be overwritten or deleted, the tool first **copies the existing file** to `<target>/.helpers/backup/<run-id>/<path>` and records that path in the journal entry.
   3. The tool then applies each planned operation in order. After each operation completes, the corresponding journal entry is marked `done` and the journal is re-fsync'd.

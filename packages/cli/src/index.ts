@@ -1,5 +1,5 @@
 /**
- * Public API entry point for clai.
+ * Public API entry point for clai-helpers.
  * Exports types and utilities for programmatic use and custom transformer authoring.
  */
 

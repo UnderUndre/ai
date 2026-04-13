@@ -1,5 +1,5 @@
 // @ts-check
-/** @type {import("clai").HelpersConfig} */
+/** @type {import("clai-helpers").HelpersConfig} */
 export default {
   version: 1,
 

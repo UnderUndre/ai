@@ -1,4 +1,4 @@
-# clai
+# clai-helpers
 
 CLI-инструмент, который использует `.claude/` как единый источник истины для конфигурации AI-инструментов и транспилирует её в форматы GitHub Copilot (`.github/`), Google Gemini (`.gemini/`) и другие.
 
@@ -27,7 +27,7 @@ CLI-инструмент, который использует `.claude/` как 
 ### Инициализация проекта
 
 ```bash
-npx clai init
+npx clai-helpers init
 ```
 
 Что происходит:
@@ -41,19 +41,19 @@ npx clai init
 ### Привязка к версии
 
 ```bash
-npx clai init --version v1.0.0
+npx clai-helpers init --version v1.0.0
 ```
 
 ### Только определённые таргеты
 
 ```bash
-npx clai init --targets claude,copilot
+npx clai-helpers init --targets claude,copilot
 ```
 
 ### Обновление до последней версии
 
 ```bash
-npx clai sync --upgrade
+npx clai-helpers sync --upgrade
 ```
 
 ## Команды
@@ -254,7 +254,7 @@ Source-репозиторий предоставляет `helpers.config.ts` (и
 ### Пример
 
 ```ts
-import { defineHelpersConfig } from "clai";
+import { defineHelpersConfig } from "clai-helpers";
 
 export default defineHelpersConfig({
   version: 1,
@@ -339,8 +339,8 @@ helpers sync --source-config ./helpers.local.config.ts
 ### Кастомный трансформер
 
 ```ts
-import type { TransformerFn, ParsedFile, RenderedFile } from "clai";
-import { FileKind } from "clai";
+import type { TransformerFn, ParsedFile, RenderedFile } from "clai-helpers";
+import { FileKind } from "clai-helpers";
 
 const transform: TransformerFn = (source, ctx): RenderedFile | null => {
   if (source.extension !== ".md") return null;
@@ -398,7 +398,7 @@ export default transform;
 ```yaml
 # GitHub Actions
 - name: Проверка дрифта AI-конфигурации
-  run: npx clai status --strict
+  run: npx clai-helpers status --strict
 ```
 
 Код выхода `2` -- кто-то руками отредактировал управляемый файл. Инструмент по умолчанию неинтерактивный, работает в CI без дополнительных флагов.
@@ -415,12 +415,12 @@ export default transform;
 import {
   defineHelpersConfig,
   FileKind, FileClass, FileStatus, ExitCode,
-} from "clai";
+} from "clai-helpers";
 
 import type {
   HelpersConfig, TargetConfig, TransformerPipeline,
   TransformerFn, ParsedFile, RenderedFile, TransformContext,
-} from "clai";
+} from "clai-helpers";
 ```
 
 ## Разработка

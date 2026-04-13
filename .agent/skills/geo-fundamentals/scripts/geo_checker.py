@@ -185,7 +185,7 @@ def check_page(file_path: Path) -> dict:
         r'\$[\d,]+',                # Dollar amounts
         r'study\s+(shows|found)',   # Research citations
         r'according to',            # Source attribution
-        r'data\s+(shows|reveals)',  # Data-backed claims
+        r'data\s+(shows|reveals)',  # Data-backed clai-helpersms
         r'\d+x\s+(faster|better|more)', # Comparison stats
         r'(million|billion|trillion)', # Large numbers
     ]

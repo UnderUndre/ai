@@ -3,7 +3,7 @@
  * Format-aware comment syntax based on file extension.
  */
 
-const TOOL_NAME = "clai";
+const TOOL_NAME = "clai-helpers";
 
 interface HeaderInfo {
   valid: boolean;
