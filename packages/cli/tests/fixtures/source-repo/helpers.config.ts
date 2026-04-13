@@ -1,14 +1,9 @@
-import { defineHelpersConfig } from "underundre-ai-helpers-cli";
+import { defineHelpersConfig } from "clai";
 
 export default defineHelpersConfig({
   version: 1,
 
-  sources: [
-    "commands/**/*.md",
-    "agents/**/*.md",
-    "CLAUDE.md",
-    "settings.json",
-  ],
+  sources: ["commands/**/*.md", "agents/**/*.md", "CLAUDE.md", "settings.json"],
 
   targets: {
     claude: {

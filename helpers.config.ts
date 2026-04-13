@@ -1,5 +1,5 @@
 // @ts-check
-/** @type {import("underundre-ai-helpers-cli").HelpersConfig} */
+/** @type {import("clai").HelpersConfig} */
 export default {
   version: 1,
 

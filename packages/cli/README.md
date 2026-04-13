@@ -1,4 +1,4 @@
-# underundre-ai-helpers-cli
+# clai
 
 CLI tool that treats `.claude/` as the single source of truth for AI-tool configuration and transpiles it into GitHub Copilot (`.github/`), Google Gemini (`.gemini/`), and other AI-tool file formats.
 
@@ -27,7 +27,7 @@ Write once in Claude format. Sync everywhere.
 ### Bootstrap a project
 
 ```bash
-npx underundre-ai-helpers-cli init
+npx clai init
 ```
 
 This will:
@@ -41,19 +41,19 @@ This will:
 ### Pin to a specific version
 
 ```bash
-npx underundre-ai-helpers-cli init --version v1.0.0
+npx clai init --version v1.0.0
 ```
 
 ### Generate only specific targets
 
 ```bash
-npx underundre-ai-helpers-cli init --targets claude,copilot
+npx clai init --targets claude,copilot
 ```
 
 ### Update to latest
 
 ```bash
-npx underundre-ai-helpers-cli sync --upgrade
+npx clai sync --upgrade
 ```
 
 ## Commands
@@ -259,7 +259,7 @@ The source repo provides a `helpers.config.ts` (or `.js`, `.mjs`, `.json`) at it
 ### Example
 
 ```ts
-import { defineHelpersConfig } from "underundre-ai-helpers-cli";
+import { defineHelpersConfig } from "clai";
 
 export default defineHelpersConfig({
   version: 1,
@@ -383,8 +383,8 @@ Local additions win. The source manifest provides defaults. This lets you add cu
 A custom transformer is a `.ts` or `.js` file that exports a default function matching the `TransformerFn` signature:
 
 ```ts
-import type { TransformerFn, ParsedFile, RenderedFile, TransformContext } from "underundre-ai-helpers-cli";
-import { FileKind } from "underundre-ai-helpers-cli";
+import type { TransformerFn, ParsedFile, RenderedFile, TransformContext } from "clai";
+import { FileKind } from "clai";
 
 const transform: TransformerFn = (source: ParsedFile, ctx: TransformContext): RenderedFile | null => {
   // Skip files that don't apply
@@ -495,7 +495,7 @@ Use `helpers status --strict` in your CI pipeline to catch drift:
 ```yaml
 # GitHub Actions example
 - name: Check AI config drift
-  run: npx underundre-ai-helpers-cli status --strict
+  run: npx clai status --strict
 ```
 
 Exit code `2` means someone manually edited a managed file. The tool is non-interactive by default, so it works in CI without any extra flags.
@@ -503,7 +503,7 @@ Exit code `2` means someone manually edited a managed file. The tool is non-inte
 For JSON output in CI scripts:
 
 ```bash
-npx underundre-ai-helpers-cli status --strict --json
+npx clai status --strict --json
 ```
 
 ### Recommended workflow
@@ -526,7 +526,7 @@ import {
   FileClass,
   FileStatus,
   ExitCode,
-} from "underundre-ai-helpers-cli";
+} from "clai";
 
 import type {
   // Config types
@@ -539,7 +539,7 @@ import type {
   ParsedFile,
   RenderedFile,
   TransformContext,
-} from "underundre-ai-helpers-cli";
+} from "clai";
 ```
 
 ## Development

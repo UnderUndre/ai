@@ -1,4 +1,4 @@
-# underundre-ai-helpers-cli
+# clai
 
 CLI-инструмент, который использует `.claude/` как единый источник истины для конфигурации AI-инструментов и транспилирует её в форматы GitHub Copilot (`.github/`), Google Gemini (`.gemini/`) и другие.
 
@@ -27,7 +27,7 @@ CLI-инструмент, который использует `.claude/` как 
 ### Инициализация проекта
 
 ```bash
-npx underundre-ai-helpers-cli init
+npx clai init
 ```
 
 Что происходит:
@@ -41,19 +41,19 @@ npx underundre-ai-helpers-cli init
 ### Привязка к версии
 
 ```bash
-npx underundre-ai-helpers-cli init --version v1.0.0
+npx clai init --version v1.0.0
 ```
 
 ### Только определённые таргеты
 
 ```bash
-npx underundre-ai-helpers-cli init --targets claude,copilot
+npx clai init --targets claude,copilot
 ```
 
 ### Обновление до последней версии
 
 ```bash
-npx underundre-ai-helpers-cli sync --upgrade
+npx clai sync --upgrade
 ```
 
 ## Команды
@@ -254,7 +254,7 @@ Source-репозиторий предоставляет `helpers.config.ts` (и
 ### Пример
 
 ```ts
-import { defineHelpersConfig } from "underundre-ai-helpers-cli";
+import { defineHelpersConfig } from "clai";
 
 export default defineHelpersConfig({
   version: 1,
@@ -339,8 +339,8 @@ helpers sync --source-config ./helpers.local.config.ts
 ### Кастомный трансформер
 
 ```ts
-import type { TransformerFn, ParsedFile, RenderedFile } from "underundre-ai-helpers-cli";
-import { FileKind } from "underundre-ai-helpers-cli";
+import type { TransformerFn, ParsedFile, RenderedFile } from "clai";
+import { FileKind } from "clai";
 
 const transform: TransformerFn = (source, ctx): RenderedFile | null => {
   if (source.extension !== ".md") return null;
@@ -398,7 +398,7 @@ export default transform;
 ```yaml
 # GitHub Actions
 - name: Проверка дрифта AI-конфигурации
-  run: npx underundre-ai-helpers-cli status --strict
+  run: npx clai status --strict
 ```
 
 Код выхода `2` -- кто-то руками отредактировал управляемый файл. Инструмент по умолчанию неинтерактивный, работает в CI без дополнительных флагов.
@@ -415,12 +415,12 @@ export default transform;
 import {
   defineHelpersConfig,
   FileKind, FileClass, FileStatus, ExitCode,
-} from "underundre-ai-helpers-cli";
+} from "clai";
 
 import type {
   HelpersConfig, TargetConfig, TransformerPipeline,
   TransformerFn, ParsedFile, RenderedFile, TransformContext,
-} from "underundre-ai-helpers-cli";
+} from "clai";
 ```
 
 ## Разработка

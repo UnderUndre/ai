@@ -14,14 +14,14 @@ packages/cli/     # CLI-инструмент для транспиляции
 specs/            # Спецификации и дизайн-документы
 ```
 
-## CLI: `underundre-ai-helpers-cli`
+## CLI: `clai`
 
 Ядро репозитория. Берёт `.claude/` как единый источник истины и транспилирует в форматы Copilot и Gemini.
 
 ### Установка в проект
 
 ```bash
-npx underundre-ai-helpers-cli init --source github:UnderUndre/ai
+npx clai init --source github:UnderUndre/ai
 ```
 
 Генерирует `.claude/`, `.github/prompts/`, `.github/instructions/`, `.gemini/commands/`, `.gemini/agents/`, `CLAUDE.md`, `GEMINI.md` и `helpers-lock.json`.
@@ -29,13 +29,13 @@ npx underundre-ai-helpers-cli init --source github:UnderUndre/ai
 ### Обновление
 
 ```bash
-npx underundre-ai-helpers-cli sync --upgrade
+npx clai sync --upgrade
 ```
 
 ### Проверка дрифта в CI
 
 ```bash
-npx underundre-ai-helpers-cli status --strict
+npx clai status --strict
 # Код выхода 2 = кто-то руками отредактировал управляемый файл
 ```
 
@@ -43,10 +43,10 @@ npx underundre-ai-helpers-cli status --strict
 
 ```bash
 # Только Claude (без Copilot/Gemini)
-npx underundre-ai-helpers-cli init --source github:UnderUndre/ai --targets claude
+npx clai init --source github:UnderUndre/ai --targets claude
 
 # Добавить Copilot позже
-npx underundre-ai-helpers-cli add-target copilot
+npx clai add-target copilot
 ```
 
 Полная документация CLI: [packages/cli/README.ru.md](packages/cli/README.ru.md)
@@ -79,7 +79,7 @@ npx underundre-ai-helpers-cli add-target copilot
 | `.claude/commands/` | Slash-команды Claude Code (53 шт.) |
 | `.claude/agents/` | Определения агентов-специалистов (27 шт.) |
 | `.claude/skills/` | Переиспользуемые модули скиллов (160 файлов) |
-| `packages/cli/` | npm-пакет `underundre-ai-helpers-cli` |
+| `packages/cli/` | npm-пакет `clai` |
 | `specs/` | Спецификации, планы, контракты, задачи |
 
 ## Разработка

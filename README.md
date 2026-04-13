@@ -14,14 +14,14 @@ packages/cli/     # CLI tool that does the transpilation
 specs/            # Feature specifications and design docs
 ```
 
-## CLI Tool: `underundre-ai-helpers-cli`
+## CLI Tool: `clai`
 
 The core of this repo. Treats `.claude/` as the single source of truth and transpiles it into Copilot and Gemini formats.
 
 ### Install in your project
 
 ```bash
-npx underundre-ai-helpers-cli init --source github:UnderUndre/ai
+npx clai init --source github:UnderUndre/ai
 ```
 
 This will generate `.claude/`, `.github/prompts/`, `.github/instructions/`, `.gemini/commands/`, `.gemini/agents/`, `CLAUDE.md`, `GEMINI.md`, and a `helpers-lock.json` lock file.
@@ -29,13 +29,13 @@ This will generate `.claude/`, `.github/prompts/`, `.github/instructions/`, `.ge
 ### Update
 
 ```bash
-npx underundre-ai-helpers-cli sync --upgrade
+npx clai sync --upgrade
 ```
 
 ### CI drift detection
 
 ```bash
-npx underundre-ai-helpers-cli status --strict
+npx clai status --strict
 # Exit code 2 = someone edited a managed file
 ```
 
@@ -43,10 +43,10 @@ npx underundre-ai-helpers-cli status --strict
 
 ```bash
 # Only Claude (skip Copilot/Gemini)
-npx underundre-ai-helpers-cli init --source github:UnderUndre/ai --targets claude
+npx clai init --source github:UnderUndre/ai --targets claude
 
 # Add Copilot later
-npx underundre-ai-helpers-cli add-target copilot
+npx clai add-target copilot
 ```
 
 Full CLI documentation: [packages/cli/README.md](packages/cli/README.md)
@@ -79,7 +79,7 @@ Your custom content here. Never overwritten by sync.
 | `.claude/commands/` | Claude Code slash commands (53 commands) |
 | `.claude/agents/` | Specialist agent definitions (27 agents) |
 | `.claude/skills/` | Reusable skill modules (160 files) |
-| `packages/cli/` | The `underundre-ai-helpers-cli` npm package |
+| `packages/cli/` | The `clai` npm package |
 | `specs/` | Feature specs, plans, contracts, tasks |
 
 ## Development
