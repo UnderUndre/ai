@@ -41,7 +41,7 @@ export default defineCommand({
   args: {
     source: {
       type: "string",
-      default: "github:underundre/helpers",
+      default: "github:UnderUndre/ai",
       description: "Source repo URL",
     },
     version: {
