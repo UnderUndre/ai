@@ -97,7 +97,7 @@ export default defineCommand({
           if (!result) continue;
           const files = Array.isArray(result) ? result : [result];
           for (const file of files) {
-            file.targetPath = resolveOutputPath(pipeline.output, parsed.sourcePath);
+            file.targetPath = resolveOutputPath(pipeline.output, parsed.sourcePath, pipeline.match);
             const stagedPath = await stageFile(stagingDir, file.content, file.targetPath);
             await commitStaged(stagedPath, join(root, file.targetPath));
 

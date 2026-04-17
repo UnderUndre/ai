@@ -9,7 +9,15 @@ import { ExitCode } from "./types/common.js";
 import { readJournal } from "./core/journal.js";
 import { acquireProcessLock, releaseProcessLock } from "./core/process-lock.js";
 
-const MUTATING_COMMANDS = new Set(["init", "sync", "remove", "remove-target", "add-target", "eject"]);
+const MUTATING_COMMANDS = new Set([
+  "init",
+  "sync",
+  "regen",
+  "remove",
+  "remove-target",
+  "add-target",
+  "eject",
+]);
 
 const main = defineCommand({
   meta: {
@@ -62,6 +70,7 @@ const main = defineCommand({
   subCommands: {
     init: () => import("./cli/init.js").then((m) => m.default),
     sync: () => import("./cli/sync.js").then((m) => m.default),
+    regen: () => import("./cli/regen.js").then((m) => m.default),
     status: () => import("./cli/status.js").then((m) => m.default),
     diff: () => import("./cli/diff.js").then((m) => m.default),
     eject: () => import("./cli/eject.js").then((m) => m.default),
@@ -127,4 +136,12 @@ export class CLIError extends Error {
   }
 }
 
-runMain(main);
+/**
+ * Entry point hook for `bin/helpers.mjs`. Kept as an exported function
+ * (not a top-level `runMain(main)` call) so importing this module for its
+ * helpers (`guardMutatingCommand`, `CLIError`, etc.) from tests and sibling
+ * command files doesn't trigger a CLI parse+exit as a side effect.
+ */
+export function runCli(): void {
+  runMain(main);
+}

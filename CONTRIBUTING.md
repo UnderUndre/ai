@@ -50,6 +50,18 @@ See `.github/instructions/coding/git/copilot-instructions.md` for full rules.
 3. If mutating: add to `MUTATING_COMMANDS` set and use `guardMutatingCommand`
 4. Add integration test
 
+## Regenerating upstream outputs
+
+This repo **is** the upstream template. After editing anything under `.claude/`, `CLAUDE.md`, or `.github/instructions/`, regenerate downstream targets (`.github/prompts/`, `.gemini/`, `.agent/`, `GEMINI.md`) with:
+
+```bash
+cd packages/cli && npm run build   # if you changed CLI code
+cd ../..                           # back to repo root
+node packages/cli/bin/helpers.mjs regen
+```
+
+`regen` is for upstream only. **Never run `helpers sync` here** — it's for consumer repos and would overwrite local authoring work with the last published upstream snapshot. The sync command refuses to run when it sees `helpers.config.ts` in cwd; pass `--allow-self-sync` only if you genuinely know why you're bypassing.
+
 ## Code Style
 
 - TypeScript strict mode, ESM

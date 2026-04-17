@@ -30,7 +30,21 @@ export async function fetchSource(
   options?: FetchOptions,
 ): Promise<FetchResult> {
   const resolvedAuth = auth ?? resolveAuth();
-  const templateUrl = ref ? `${url}#${ref}` : url;
+
+  // Resolve `"latest"` (our internal sentinel for "newest release") into an
+  // actual git ref. GitHub's tarball endpoint does NOT treat "latest" as a
+  // special keyword — passing `#latest` to giget yields /tarball/latest → 404
+  // for any repo that doesn't happen to have a tag/branch literally named
+  // "latest". We hit the releases API, fall back to the default branch, and
+  // only then pass the resolved ref to giget.
+  const effectiveRef =
+    ref && ref !== "latest"
+      ? ref
+      : options?.offline
+        ? undefined
+        : await resolveLatestRef(url, resolvedAuth);
+
+  const templateUrl = effectiveRef ? `${url}#${effectiveRef}` : url;
 
   // Download to OS temp dir — NOT cwd — to avoid polluting the project
   const tempDir = await mkdtemp(join(tmpdir(), "helpers-source-"));
@@ -46,13 +60,69 @@ export async function fetchSource(
 
   // Resolve commit SHA — skip network call in offline mode
   const commit = options?.offline
-    ? (ref ?? "offline")
-    : await resolveCommitSha(url, ref, resolvedAuth);
+    ? (effectiveRef ?? "offline")
+    : await resolveCommitSha(url, effectiveRef, resolvedAuth);
 
   return {
     dir: result.dir,
     commit,
   };
+}
+
+/**
+ * Resolve the sentinel ref "latest" (or undefined) to a concrete ref.
+ *
+ * Order:
+ *   1. GitHub releases/latest → release `tag_name` (e.g. `v0.2.0`).
+ *   2. Repo default_branch (typically `main`).
+ *   3. `undefined` (giget will then use the default branch automatically).
+ *
+ * Returning `undefined` when both lookups fail is safe because giget
+ * degrades to the default branch on a bare URL. This keeps fresh projects
+ * without any tags working while still preferring tags when they exist.
+ */
+async function resolveLatestRef(url: string, auth?: string): Promise<string | undefined> {
+  const repo = parseGithubRepo(url);
+  if (!repo) return undefined;
+
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github+json",
+  };
+  if (auth) headers.Authorization = `Bearer ${auth}`;
+
+  try {
+    const releaseRes = await fetch(
+      `https://api.github.com/repos/${repo.owner}/${repo.repo}/releases/latest`,
+      { headers },
+    );
+    if (releaseRes.ok) {
+      const release = (await releaseRes.json()) as { tag_name?: string };
+      if (release.tag_name) return release.tag_name;
+    }
+  } catch {
+    // Network glitch — fall through to default_branch lookup
+  }
+
+  try {
+    const repoRes = await fetch(
+      `https://api.github.com/repos/${repo.owner}/${repo.repo}`,
+      { headers },
+    );
+    if (repoRes.ok) {
+      const data = (await repoRes.json()) as { default_branch?: string };
+      if (data.default_branch) return data.default_branch;
+    }
+  } catch {
+    // Ignore — fall through to undefined
+  }
+
+  return undefined;
+}
+
+function parseGithubRepo(url: string): { owner: string; repo: string } | null {
+  const match = url.match(/github[.:]([^/]+)\/([^/#]+)/);
+  if (!match) return null;
+  return { owner: match[1]!, repo: match[2]!.replace(/\.git$/, "") };
 }
 
 function resolveAuth(): string | undefined {

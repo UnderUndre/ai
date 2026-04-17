@@ -13,7 +13,7 @@ const BACKUP_DIR = ".helpers/backup";
 
 export function createJournal(
   _root: string,
-  command: "init" | "sync",
+  command: "init" | "sync" | "regen",
   operations: Omit<JournalOperation, "done">[],
   preLockHash: string,
 ): Journal {

@@ -76,9 +76,29 @@ helpers init [options]
 | `--source-config <path>` | string  | --                          | Local manifest override               |
 | `--trust-custom`         | boolean | `false`                     | Pre-approve custom transformers       |
 
+### `helpers regen`
+
+Regenerate downstream targets **in-place** from the local `helpers.config.ts`. No network fetch, no lockfile. Intended for **upstream template repos** that maintain generated outputs alongside sources (like UnderUndre/ai itself) and need to refresh them after editing the `.claude/` tree.
+
+```bash
+helpers regen                   # all targets
+helpers regen --targets copilot # only copilot
+helpers regen --dry-run         # preview
+```
+
+Refuses to run if no `helpers.config.ts` is found in cwd. Consumer projects should use `sync` (or `init` for first setup) instead.
+
+| Flag                     | Type    | Default | Description                                   |
+| ------------------------ | ------- | ------- | --------------------------------------------- |
+| `--targets <list>`       | string  | ALL     | Comma-separated target names                  |
+| `--source-config <path>` | string  | --      | Override `helpers.config.ts` location         |
+| `--trust-custom`         | boolean | false   | Pre-approve custom transformers               |
+
 ### `helpers sync`
 
 Update an existing project from the source repo. Without `--upgrade`, heals drift only.
+
+Refuses to run if cwd contains `helpers.config.ts` (upstream-template layout) — running `sync` there would overwrite local authoring work. Use `helpers regen` instead, or pass `--allow-self-sync` to override.
 
 ```bash
 helpers sync [options]
@@ -341,11 +361,14 @@ export default defineHelpersConfig({
 
 ### Template variables
 
-| Variable           | Expands to                         | Example                            |
-| ------------------ | ---------------------------------- | ---------------------------------- |
-| `{{name}}`         | Filename stem (no extension)       | `commit` from `commands/commit.md` |
-| `{{relativePath}}` | Full relative path from `.claude/` | `commands/commit.md`               |
-| `{{ext}}`          | Original extension with dot        | `.md`                              |
+| Variable           | Expands to                                                                 | Example                                                        |
+| ------------------ | -------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `{{name}}`         | Filename stem (no extension)                                               | `commit` from `.claude/commands/commit.md`                     |
+| `{{relativePath}}` | Full source path verbatim                                                  | `.claude/commands/commit.md`                                   |
+| `{{subpath}}`      | Source path minus the match's non-wildcard prefix (re-root a subtree)      | `commit.md` (match `.claude/commands/**/*`, source as above)   |
+| `{{ext}}`          | Original extension with dot                                                | `.md`                                                          |
+
+Use `{{subpath}}` when you want to **move** a directory tree to a new root while preserving the relative structure underneath. E.g. `{ match: ".claude/agents/**/*", output: ".agent/agents/{{subpath}}" }` turns `.claude/agents/x/y.md` into `.agent/agents/x/y.md` — not `.agent/agents/.claude/agents/x/y.md` (which is what `{{relativePath}}` would produce).
 
 ### File classes
 

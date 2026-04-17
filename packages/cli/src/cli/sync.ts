@@ -101,7 +101,7 @@ export async function computeSyncPlan(
 
         const files = Array.isArray(result) ? result : [result];
         for (const file of files) {
-          file.targetPath = resolveOutputPath(pipeline.output, parsed.sourcePath);
+          file.targetPath = resolveOutputPath(pipeline.output, parsed.sourcePath, pipeline.match);
           if (pipeline.transformer === "identity") {
             sourcePathMap.set(file.fromSource, file.targetPath);
           }
@@ -313,6 +313,12 @@ export default defineCommand({
       default: false,
       description: "Pre-approve custom transformers",
     },
+    "allow-self-sync": {
+      type: "boolean",
+      default: false,
+      description:
+        "Bypass the upstream-repo safety guard (advanced; overwrites local .claude/ with the upstream snapshot)",
+    },
   },
   async run({ args }) {
     const root = process.cwd();
@@ -330,6 +336,31 @@ export default defineCommand({
         consola.error("No helpers-lock.json found. Run `helpers init` first.");
         process.exitCode = ExitCode.UsageError;
         return;
+      }
+
+      // 1a. Upstream self-sync guard.
+      // If cwd contains `helpers.config.ts`, this is the upstream template repo
+      // itself. Running `sync` here would overwrite the local `.claude/` tree
+      // with the last *published* upstream snapshot — destroying any unpushed
+      // authoring work. `helpers regen` is the right command for upstream
+      // in-place regeneration. Require explicit `--allow-self-sync` to bypass.
+      if (!(args as Record<string, unknown>)["allow-self-sync"]) {
+        try {
+          await access(join(root, "helpers.config.ts"));
+          consola.error(
+            "Detected `helpers.config.ts` in cwd — this looks like the upstream " +
+              "template repo. Running `sync` here would overwrite your local `.claude/` " +
+              "with the last published upstream snapshot and destroy unpushed changes.\n\n" +
+              "• For upstream maintainers: use `helpers regen` to rebuild generated " +
+              "outputs in-place from the local sources.\n" +
+              "• For consumers that legitimately maintain a mirror: pass `--allow-self-sync` " +
+              "to bypass this guard.",
+          );
+          process.exitCode = ExitCode.UsageError;
+          return;
+        } catch {
+          // No helpers.config.ts — we're in a consumer repo, proceed normally.
+        }
       }
 
       // 2. Determine ref to fetch

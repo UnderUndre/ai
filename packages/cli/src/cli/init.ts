@@ -153,7 +153,7 @@ export default defineCommand({
 
             for (const file of files) {
               // Always resolve output path from pipeline template
-              file.targetPath = resolveOutputPath(pipeline.output, parsed.sourcePath);
+              file.targetPath = resolveOutputPath(pipeline.output, parsed.sourcePath, pipeline.match);
               allRendered.push(file);
             }
           }

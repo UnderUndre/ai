@@ -62,7 +62,7 @@ function validateManifest(manifest: HelpersConfig): void {
       }
 
       // Check output template variables
-      const validVars = /\{\{(name|relativePath|ext)\}\}/g;
+      const validVars = /\{\{(name|relativePath|subpath|ext)\}\}/g;
       const stripped = pipeline.output.replace(validVars, "");
       const invalidVars = stripped.match(/\{\{(\w+)\}\}/);
       if (invalidVars) {
@@ -73,7 +73,7 @@ function validateManifest(manifest: HelpersConfig): void {
 
       // Only flag duplicates for literal output paths (no template variables).
       // Templates with {{name}}, {{relativePath}}, etc. produce different paths per source file.
-      const hasTemplateVars = /\{\{(name|relativePath|ext)\}\}/.test(pipeline.output);
+      const hasTemplateVars = /\{\{(name|relativePath|subpath|ext)\}\}/.test(pipeline.output);
       if (!hasTemplateVars) {
         if (outputPaths.has(pipeline.output)) {
           throw new Error(`Duplicate output path: "${pipeline.output}" across targets.`);

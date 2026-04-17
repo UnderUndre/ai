@@ -96,17 +96,17 @@ export default {
         {
           transformer: "identity",
           match: ".claude/agents/**/*",
-          output: ".agent/agents/{{relativePath}}",
+          output: ".agent/agents/{{subpath}}",
         },
         {
           transformer: "identity",
           match: ".claude/skills/**/*",
-          output: ".agent/skills/{{relativePath}}",
+          output: ".agent/skills/{{subpath}}",
         },
         {
           transformer: "identity",
           match: ".claude/commands/**/*",
-          output: ".agent/workflows/{{relativePath}}",
+          output: ".agent/workflows/{{subpath}}",
         },
       ],
     },

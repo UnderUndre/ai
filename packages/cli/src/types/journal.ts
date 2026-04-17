@@ -4,7 +4,7 @@
  */
 export interface Journal {
   runId: string;
-  command: "init" | "sync";
+  command: "init" | "sync" | "regen";
   startedAt: string;
   preLockHash: string;
   postLockHash: string;
