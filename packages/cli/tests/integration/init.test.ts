@@ -57,11 +57,18 @@ const TEST_MANIFEST: HelpersConfig = {
   },
 };
 
-const CTX = {
+const CTX: {
+  sourceCommit: string;
+  toolVersion: string;
+  targetName: string;
+  config: HelpersConfig;
+  allParsedFiles: ReturnType<typeof parseSourceFile>[];
+} = {
   sourceCommit: "abc123def456",
   toolVersion: "0.1.0",
   targetName: "",
   config: TEST_MANIFEST,
+  allParsedFiles: [],
 };
 
 /**
@@ -105,6 +112,7 @@ async function runFullInit(
   );
 
   const allRendered: RenderedFile[] = [];
+  CTX.allParsedFiles = parsedFiles;
   for (const targetName of targetNames) {
     const target = TEST_MANIFEST.targets[targetName]!;
     CTX.targetName = targetName;
@@ -277,15 +285,22 @@ describe("init flow", () => {
     expect(rootInstructions!.content).not.toContain(".claude/commands/");
   });
 
-  it("gemini root rewrites .claude/ to .gemini/ paths", async () => {
+  it("gemini root is composed and degrades gracefully when phrases/coding sources are missing", async () => {
+    // The claude-to-gemini-root transformer composes GEMINI.md from
+    //   .github/instructions/persona/phrases/copilot-instructions.md
+    //   .github/instructions/coding/copilot-instructions.md
+    // This fixture repo doesn't ship those, so the transformer must still
+    // produce a valid GEMINI.md — just without the body sections.
     const rendered = await runFullInit(["gemini"]);
     const geminiRoot = rendered.find((f) => f.targetPath === "GEMINI.md");
 
     expect(geminiRoot).toBeDefined();
-    expect(geminiRoot!.content).toContain(".gemini/agents/debugger.md");
-    expect(geminiRoot!.content).toContain(".gemini/commands/commit.toml");
-    expect(geminiRoot!.content).not.toContain(".claude/agents/");
-    expect(geminiRoot!.content).not.toContain(".claude/commands/");
+    expect(geminiRoot!.content).toContain("# GEMINI Instructions");
+    expect(geminiRoot!.fromSource).toBe("CLAUDE.md");
+    expect(geminiRoot!.transformer).toBe("claude-to-gemini-root");
+    // Project overview is NEVER included in GEMINI.md, even when present in
+    // source repo — consumers have their own project identity.
+    expect(geminiRoot!.content).not.toContain("## Project: UnderUndre");
   });
 
   it("identity transformer preserves Protected Slot markers", async () => {

@@ -29,6 +29,13 @@ export interface TransformContext {
   targetName: string;
   /** Full resolved manifest */
   config: HelpersConfig;
+  /**
+   * All parsed source files for the current run. Optional for backwards
+   * compatibility — transformers that compose output from multiple sources
+   * (e.g. `claude-to-gemini-root`) read sibling files from here instead of
+   * relying solely on the single `source` argument.
+   */
+  allParsedFiles?: ParsedFile[];
 }
 
 /**

@@ -81,6 +81,7 @@ export async function computeSyncPlan(
     toolVersion: lock.toolVersion,
     targetName: "",
     config: manifest,
+    allParsedFiles: parsedFiles,
   };
 
   // Build source-path mapping from identity transformer

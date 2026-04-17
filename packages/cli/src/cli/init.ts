@@ -133,6 +133,7 @@ export default defineCommand({
         toolVersion: "0.1.0",
         targetName: "",
         config: manifest,
+        allParsedFiles: parsedFiles,
       };
 
       for (const targetName of requestedTargets) {
