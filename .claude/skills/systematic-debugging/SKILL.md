@@ -6,6 +6,8 @@ allowed-tools: Read, Glob, Grep
 
 # Systematic Debugging
 
+ultrathink
+
 > Source: obra/superpowers
 
 ## Overview

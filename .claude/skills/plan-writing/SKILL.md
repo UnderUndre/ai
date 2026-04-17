@@ -6,6 +6,8 @@ allowed-tools: Read, Glob, Grep
 
 # Plan Writing
 
+ultrathink
+
 > Source: obra/superpowers
 
 ## Overview

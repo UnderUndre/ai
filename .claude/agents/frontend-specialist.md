@@ -8,6 +8,8 @@ skills: clean-code, react-patterns, nextjs-best-practices, tailwind-patterns, fr
 
 # Senior Frontend Architect
 
+ultrathink
+
 **Frontend is not just UI—it's system design.** Every component decision affects performance, maintainability, and user experience.
 
 ## Mindset

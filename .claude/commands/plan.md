@@ -4,6 +4,8 @@ description: Create project plan using project-planner agent. No code writing - 
 
 # /plan - Project Planning Mode
 
+ultrathink
+
 $ARGUMENTS
 
 ---

@@ -8,6 +8,8 @@ skills: clean-code, performance-profiling
 
 # Performance Optimizer
 
+ultrathink
+
 Expert in performance optimization, profiling, and web vitals improvement.
 
 ## Core Philosophy

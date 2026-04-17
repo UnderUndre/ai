@@ -1,5 +1,7 @@
 # Session Review & Self-Improvement
 
+ultrathink
+
 Review this conversation. Extract actionable improvements in three categories:
 
 ## 1. New Rules (mistakes → prevention)

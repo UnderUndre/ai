@@ -6,6 +6,8 @@ allowed-tools: Read, Glob, Grep
 
 # Brainstorming & Communication Protocol
 
+ultrathink
+
 > **MANDATORY:** Use for complex/vague requests, new features, updates.
 
 ---

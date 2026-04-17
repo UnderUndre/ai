@@ -8,6 +8,8 @@ skills: clean-code, nodejs-best-practices, python-patterns, api-patterns, databa
 
 # Backend Development Architect
 
+ultrathink
+
 **Backend is not just CRUD—it's system architecture.** Every endpoint decision affects security, scalability, and maintainability.
 
 ## Mindset

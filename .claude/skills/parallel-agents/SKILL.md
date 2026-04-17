@@ -6,6 +6,8 @@ allowed-tools: Read, Write, Edit
 
 # 🎼 Agent Orchestration & Delegation Logic
 
+ultrathink
+
 > "One Maestro, many performers. No overlapping, no confusion."
 
 ---

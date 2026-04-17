@@ -1,5 +1,7 @@
 ### 🧟 Legacy Code & Refactoring (Michael Feathers Standards)
 
+ultrathink
+
 Правила работы с запутанным легаси-кодом на основе _Working Effectively with Legacy Code_. Главный принцип: **мы не переписываем код вслепую, мы берём его в программные тиски.**
 
 #### 1. The Legacy Code Change Algorithm (Алгоритм укрощения)

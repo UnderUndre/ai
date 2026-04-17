@@ -12,6 +12,8 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Goal
 
+ultrathink
+
 Identify inconsistencies, duplications, ambiguities, and underspecified items across the three core artifacts (`spec.md`, `plan.md`, `tasks.md`) before implementation. This command MUST run only after `/speckit.tasks` has successfully produced a complete `tasks.md`.
 
 ## Operating Constraints

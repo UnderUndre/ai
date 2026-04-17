@@ -6,6 +6,8 @@ allowed-tools: Read, Glob, Grep
 
 # Red Team Tactics
 
+ultrathink
+
 > Adversary simulation principles based on MITRE ATT&CK framework.
 
 ---

@@ -6,6 +6,8 @@ allowed-tools: Read, Glob, Grep
 
 # Behavioral Modes - Adaptive AI Operating Modes
 
+ultrathink
+
 ## Purpose
 This skill defines distinct behavioral modes that optimize AI performance for specific tasks. Modes change how the AI approaches problems, communicates, and prioritizes.
 

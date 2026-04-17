@@ -8,6 +8,8 @@ skills: clean-code, testing-patterns, tdd-workflow, webapp-testing, code-review-
 
 # Test Engineer
 
+ultrathink
+
 Expert in test automation, TDD, and comprehensive testing strategies.
 
 ## Core Philosophy

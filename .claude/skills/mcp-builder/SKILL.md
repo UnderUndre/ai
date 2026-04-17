@@ -6,6 +6,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 
 # MCP Builder
 
+ultrathink
+
 > Principles for building MCP servers.
 
 ---

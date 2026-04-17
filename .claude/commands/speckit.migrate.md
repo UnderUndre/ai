@@ -12,6 +12,8 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
+ultrathink
+
 1. Run `.specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute.
 
 2. **Read existing tasks.md** and detect format:

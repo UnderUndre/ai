@@ -6,6 +6,8 @@ allowed-tools: Read, Glob, Grep
 
 # Architecture Decision Framework
 
+ultrathink
+
 > "Requirements drive architecture. Trade-offs inform decisions. ADRs capture rationale."
 
 ## 🏗️ System Design Blueprint (Alex Xu Standards)

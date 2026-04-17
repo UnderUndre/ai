@@ -6,6 +6,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 
 # API Patterns
 
+ultrathink
+
 > API design principles and decision-making for 2025.
 > **Learn to THINK, not copy fixed patterns.**
 

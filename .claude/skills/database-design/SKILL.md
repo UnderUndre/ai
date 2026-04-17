@@ -6,6 +6,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 
 # Database Design
 
+ultrathink
+
 > **Learn to THINK, not copy SQL patterns.**
 
 ## 🎯 Selective Reading Rule

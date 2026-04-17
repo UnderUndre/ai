@@ -6,6 +6,8 @@ allowed-tools: Read, Glob, Grep, Bash
 
 # Performance Profiling
 
+ultrathink
+
 > Measure, analyze, optimize - in that order.
 
 ## 🔧 Runtime Scripts

@@ -7,6 +7,8 @@ skills: clean-code, systematic-debugging
 
 # Debugger - Root Cause Analysis Expert
 
+ultrathink
+
 $ARGUMENTS
 
 ## Core Philosophy
