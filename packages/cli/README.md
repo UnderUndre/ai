@@ -36,7 +36,8 @@ This will:
 2. Copy `.claude/` files (commands, agents, persona, CLAUDE.md)
 3. Generate `.github/prompts/`, `.github/instructions/`, `.github/copilot-instructions.md` for Copilot
 4. Generate `.gemini/commands/`, `.gemini/agents/`, `GEMINI.md` for Gemini
-5. Create `helpers-lock.json` -- **commit this file**
+5. Create `helpers-lock.json` — **commit this file** (same convention as `package-lock.json`; needed for `status --strict` and team-wide drift detection)
+6. Append `.helpers/` to your `.gitignore` (staging dir used for atomic writes — must never be committed). Idempotent: existing entries are detected and not duplicated.
 
 ### Pin to a specific version
 

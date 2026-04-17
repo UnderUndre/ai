@@ -31,6 +31,7 @@ import {
   markOperationDone,
   deleteJournal,
 } from "../core/journal.js";
+import { ensureGitignoreEntries } from "../core/gitignore.js";
 import { guardMutatingCommand, releaseMutatingGuard } from "../cli.js";
 
 export default defineCommand({
@@ -229,6 +230,17 @@ export default defineCommand({
       await writeLock(root, lock);
       await deleteJournal(root);
       await cleanStaging(root);
+
+      // Protect the consumer from accidentally committing the staging
+      // directory the CLI uses for atomic writes. `helpers-lock.json` is
+      // intentionally NOT added — it must be committed (same convention as
+      // package-lock.json) so `status --strict` and team-wide drift checks work.
+      const addedIgnores = await ensureGitignoreEntries(root, [
+        { pattern: ".helpers/", comment: "staging directory for atomic writes" },
+      ]);
+      if (addedIgnores.length > 0) {
+        consola.info(`Added to .gitignore: ${addedIgnores.join(", ")}`);
+      }
 
       consola.success(`Initialized ${allRendered.length} files. Lock file written.`);
     } finally {
