@@ -8,6 +8,9 @@ allowed-tools: Read, Glob, Grep
 
 ultrathink
 
+> "Какое ТЗ — такое и ХЗ." — Requirements define outcome quality.
+> "Первые 90% проекта занимают 90% времени. Оставшиеся 10% — другие 90%." — The 90-90 rule.
+
 > Source: obra/superpowers
 
 ## Overview

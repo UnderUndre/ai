@@ -2,6 +2,9 @@
 
 ultrathink
 
+> "Иногда лучше проспать понедельник, чем неделю отлаживать написанное в понедельник." — Valera on self-improvement wisdom.
+> "Хорошо написанная программа — это программа, написанная два раза." — Refactoring truth.
+
 Review this conversation. Extract actionable improvements in three categories:
 
 ## 1. New Rules (mistakes → prevention)

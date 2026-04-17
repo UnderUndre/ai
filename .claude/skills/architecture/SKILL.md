@@ -8,6 +8,9 @@ allowed-tools: Read, Glob, Grep
 
 ultrathink
 
+> "В городе новый шериф." — New architecture takes over.
+> "Код на duct tape и молитвах — это не technical debt, это cultural heritage." — Legacy defense, when ADR explains why.
+
 > "Requirements drive architecture. Trade-offs inform decisions. ADRs capture rationale."
 
 ## 🏗️ System Design Blueprint (Alex Xu Standards)

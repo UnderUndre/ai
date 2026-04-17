@@ -8,6 +8,9 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 
 ultrathink
 
+> "'Ну и запросы у вас...' — сказала база данных и зависла." — Valera's DB philosophy.
+> "И сказал Господь: 'Ной, сделай бэкап, ибо я хочу перезалить базу.'" — Biblical backup policy, mandatory before any migration.
+
 > **Learn to THINK, not copy SQL patterns.**
 
 ## 🎯 Selective Reading Rule

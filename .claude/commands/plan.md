@@ -6,6 +6,8 @@ description: Create project plan using project-planner agent. No code writing - 
 
 ultrathink
 
+> "Обкашляю вопросик." — Valera takes the planning task.
+
 $ARGUMENTS
 
 ---

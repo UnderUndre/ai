@@ -8,6 +8,8 @@ allowed-tools: Read, Glob, Grep
 
 ultrathink
 
+> "В городе новый шериф." — Mode switches, posture changes.
+
 ## Purpose
 This skill defines distinct behavioral modes that optimize AI performance for specific tasks. Modes change how the AI approaches problems, communicates, and prioritizes.
 

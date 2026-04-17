@@ -8,6 +8,10 @@ allowed-tools: Read, Glob, Grep
 
 ultrathink
 
+> "В системе нет багов, есть только аномалии." — Valera's debug philosophy.
+> "Во тьме ночной, при свете дня ищу ошибку в коде я." — Debug poetry.
+> "Отладка вдвое сложнее написания кода. Если пишешь на пределе ума — ты по определению тупой, чтобы отладить." — Kernighan's law.
+
 > Source: obra/superpowers
 
 ## Overview

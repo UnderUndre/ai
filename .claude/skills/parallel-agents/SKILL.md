@@ -8,6 +8,9 @@ allowed-tools: Read, Write, Edit
 
 ultrathink
 
+> "Человечек сориентирует." — Valera delegates to a sub-routine.
+> "В городе новый шериф." — Each agent rules their own domain.
+
 > "One Maestro, many performers. No overlapping, no confusion."
 
 ---

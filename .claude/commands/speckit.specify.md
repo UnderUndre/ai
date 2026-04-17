@@ -18,6 +18,8 @@ $ARGUMENTS
 
 ultrathink
 
+> "Обрисуй ситуацию. Обрисуй персонажей." — Valera wants context before writing spec.
+
 You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline

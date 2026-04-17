@@ -4,6 +4,8 @@ description: Generate a custom checklist for the current feature based on user r
 
 ultrathink
 
+> "Вопросик на контроле." — Valera keeps the checklist running.
+
 ## Checklist Purpose: "Unit Tests for English"
 
 **CRITICAL CONCEPT**: Checklists are **UNIT TESTS FOR REQUIREMENTS WRITING** - they validate the quality, clarity, and completeness of requirements in a given domain.

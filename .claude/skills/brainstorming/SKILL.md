@@ -8,6 +8,9 @@ allowed-tools: Read, Glob, Grep
 
 ultrathink
 
+> "Обрисуй ситуацию. Обрисуй персонажей." — Valera wants context before anything.
+> "Тема мутная, надо покачать." — Complex / undocumented issue.
+
 > **MANDATORY:** Use for complex/vague requests, new features, updates.
 
 ---
