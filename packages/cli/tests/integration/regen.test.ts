@@ -30,52 +30,53 @@ describe("regen command", () => {
     const claudeMd = await readFile(join(tempDir, ".claude/CLAUDE.md"), "utf8");
     await writeFile(join(tempDir, "CLAUDE.md"), claudeMd, "utf8");
     await rm(join(tempDir, ".claude/CLAUDE.md"));
-    // Write an inline JSON manifest instead of copying the fixture's
-    // helpers.config.ts — the fixture imports `defineHelpersConfig` from
-    // the `clai-helpers` package which can't be resolved from a tmp dir
-    // (no node_modules link). JSON manifest sidesteps module resolution.
-    // Repo-root-relative patterns — this mirrors how real upstream repos
-    // (like UnderUndre/ai) configure their manifests. The fixture has files
-    // under `.claude/`, so patterns are `.claude/...`.
-    const manifest = {
-      version: 1,
-      sources: [
-        ".claude/commands/**/*.md",
-        ".claude/agents/**/*.md",
-        "CLAUDE.md",
-      ],
-      targets: {
-        claude: {
-          pipelines: [
-            { transformer: "identity", match: ".claude/**/*", output: "{{relativePath}}" },
-            { transformer: "identity", match: "CLAUDE.md", output: "CLAUDE.md", class: "core" },
-          ],
-        },
-        copilot: {
-          pipelines: [
-            { transformer: "claude-to-copilot-prompt", match: ".claude/commands/**/*.md", output: ".github/prompts/{{name}}.prompt.md" },
-            { transformer: "claude-to-copilot-instructions", match: ".claude/agents/**/*.md", output: ".github/instructions/{{name}}.instructions.md" },
-            { transformer: "claude-to-copilot-root-instructions", match: "CLAUDE.md", output: ".github/copilot-instructions.md" },
-          ],
-        },
-        gemini: {
-          pipelines: [
-            { transformer: "claude-to-gemini-command", match: ".claude/commands/**/*.md", output: ".gemini/commands/{{name}}.toml" },
-            { transformer: "claude-to-gemini-agent", match: ".claude/agents/**/*.md", output: ".gemini/agents/{{name}}.md" },
-            { transformer: "claude-to-gemini-root", match: "CLAUDE.md", output: "GEMINI.md" },
-          ],
+    // Write the manifest directly into `helpers.config.ts` as a plain
+    // object literal. We deliberately do NOT write a sibling
+    // `helpers.config.json` — c12's default resolution order prefers the
+    // `.ts` file (loaded via jiti), so two config files in the same dir
+    // led to an earlier CI failure where the `.ts` stub (empty
+    // `export {}`) shadowed the real `.json` manifest on Linux jiti but
+    // not on Windows. Single source of truth eliminates the footgun.
+    //
+    // Plain object + no import of `defineHelpersConfig` from
+    // `clai-helpers`: the tmp dir has no node_modules linking to the CLI
+    // package, so an import would fail. `defineHelpersConfig` is a pure
+    // identity helper — safe to skip here.
+    const manifestSource = `export default ${JSON.stringify(
+      {
+        version: 1,
+        sources: [
+          ".claude/commands/**/*.md",
+          ".claude/agents/**/*.md",
+          "CLAUDE.md",
+        ],
+        targets: {
+          claude: {
+            pipelines: [
+              { transformer: "identity", match: ".claude/**/*", output: "{{relativePath}}" },
+              { transformer: "identity", match: "CLAUDE.md", output: "CLAUDE.md", class: "core" },
+            ],
+          },
+          copilot: {
+            pipelines: [
+              { transformer: "claude-to-copilot-prompt", match: ".claude/commands/**/*.md", output: ".github/prompts/{{name}}.prompt.md" },
+              { transformer: "claude-to-copilot-instructions", match: ".claude/agents/**/*.md", output: ".github/instructions/{{name}}.instructions.md" },
+              { transformer: "claude-to-copilot-root-instructions", match: "CLAUDE.md", output: ".github/copilot-instructions.md" },
+            ],
+          },
+          gemini: {
+            pipelines: [
+              { transformer: "claude-to-gemini-command", match: ".claude/commands/**/*.md", output: ".gemini/commands/{{name}}.toml" },
+              { transformer: "claude-to-gemini-agent", match: ".claude/agents/**/*.md", output: ".gemini/agents/{{name}}.md" },
+              { transformer: "claude-to-gemini-root", match: "CLAUDE.md", output: "GEMINI.md" },
+            ],
+          },
         },
       },
-    };
-    await writeFile(join(tempDir, "helpers.config.json"), JSON.stringify(manifest), "utf8");
-    // Also a tiny `helpers.config.ts` whose sole job is to satisfy the
-    // upstream-presence guard (`access(helpers.config.ts)` check in regen.ts).
-    // The real manifest c12 loads is `helpers.config.json`.
-    await writeFile(
-      join(tempDir, "helpers.config.ts"),
-      "// Guard-presence marker; actual manifest is helpers.config.json\nexport {};\n",
-      "utf8",
-    );
+      null,
+      2,
+    )};\n`;
+    await writeFile(join(tempDir, "helpers.config.ts"), manifestSource, "utf8");
   });
 
   afterEach(async () => {
