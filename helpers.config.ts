@@ -86,5 +86,44 @@ export default {
         },
       ],
     },
+
+    // Shared mirror for non-Claude AI tooling that expects `.agent/` layout
+    // (agents/, skills/, workflows/). Auto-regenerated via identity transformer
+    // so it cannot drift from `.claude/`. Previously maintained by hand and
+    // accumulated ~13 files of drift — Principle II forbids hand-maintained mirrors.
+    agent: {
+      pipelines: [
+        {
+          transformer: "identity",
+          match: ".claude/agents/**/*",
+          output: ".agent/agents/{{relativePath}}",
+        },
+        {
+          transformer: "identity",
+          match: ".claude/skills/**/*",
+          output: ".agent/skills/{{relativePath}}",
+        },
+        {
+          transformer: "identity",
+          match: ".claude/commands/**/*",
+          output: ".agent/workflows/{{relativePath}}",
+        },
+      ],
+    },
+
+    // Optional: Valera persona catchphrases (Russian-flavored). Consumer repos
+    // that don't want cultural/language flavor in their AI prompts should omit
+    // this target. Core persona (without phrases) is in `.github/instructions/
+    // persona/copilot-instructions.md` and ships via copilot/gemini targets
+    // unconditionally. See Principle V.
+    "persona-phrases": {
+      pipelines: [
+        {
+          transformer: "identity",
+          match: ".github/instructions/persona/phrases/**/*",
+          output: "{{relativePath}}",
+        },
+      ],
+    },
   },
 };

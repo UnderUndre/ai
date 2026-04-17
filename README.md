@@ -76,11 +76,13 @@ Your custom content here. Never overwritten by sync.
 
 | Directory | Purpose |
 |-----------|---------|
-| `.claude/commands/` | Claude Code slash commands (53 commands) |
+| `.claude/commands/` | Claude Code slash commands (54 commands) |
 | `.claude/agents/` | Specialist agent definitions (27 agents) |
-| `.claude/skills/` | Reusable skill modules (160 files) |
+| `.claude/skills/` | Reusable skill modules (44 skills) |
 | `packages/cli/` | The `clai-helpers` npm package |
 | `specs/` | Feature specs, plans, contracts, tasks |
+| `.specify/` | Spec Kit pipeline: memory (constitution), scripts, templates |
+| `.github/instructions/` | Hand-written Copilot instruction files (coding, persona, project) |
 
 ## Development
 

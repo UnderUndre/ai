@@ -25,7 +25,8 @@
     "test:watch": "vitest",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
-    "validate": "tsc --noEmit"
+    "validate": "tsc --noEmit",
+    "prepublishOnly": "npm run validate && npm test && npm run build"
   },
   "engines": {
     "node": ">=20.0.0"

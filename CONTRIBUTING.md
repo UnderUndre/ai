@@ -21,7 +21,7 @@ npm test
 
 ## Branch Strategy
 
-- `main` — stable, always passes CI
+- `main` — stable; CI (see `.github/workflows/ci.yml`) must pass (validate + test + build + drift check)
 - Feature branches: `type/short-description` (e.g., `feat/cursor-transformer`)
 - PRs into `main`, squash merge
 
