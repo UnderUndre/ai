@@ -55,7 +55,9 @@ Load only the minimal necessary context from each artifact:
 **From tasks.md:**
 
 - Task IDs and descriptions
-- Agent tags (`[SETUP]`, `[DB]`, `[BE]`, `[FE]`, `[OPS]`, `[E2E]`, `[SEC]`)
+- Agent tags:
+  - Core: `[SETUP]`, `[DB]`, `[BE]`, `[FE]`, `[OPS]`, `[E2E]`, `[SEC]`, `[PERF]`, `[DOC]`, `[DEBUG]`, `[REFACTOR]`
+  - Conditional: `[SEO]`, `[MOBILE]`, `[UIUX]`, `[PENTEST]`, `[GAME]`
 - Story labels (`[US1]`, `[US2]`, etc.)
 - Phase grouping and sync barriers
 - Referenced file paths

@@ -32,15 +32,32 @@ You **MUST** consider the user input before proceeding (if not empty).
    - `components/`, `pages/`, `app/`, `styles/`, `public/` → `[FE]`
    - `Dockerfile`, `.github/workflows/`, `infra/`, `deploy/` → `[OPS]`
    - `tests/e2e/`, `tests/integration/` (cross-domain) → `[E2E]`
+   - `docs/`, `README.md`, `CHANGELOG.md`, `*.api.md` → `[DOC]`
+   - `ios/`, `android/`, React Native/Flutter app roots → `[MOBILE]`
+   - `robots.txt`, `sitemap.xml`, `app/sitemap.*`, `app/robots.*` → `[SEO]`
+   - `design/`, `figma/`, design tokens, wireframes → `[UIUX]`
+   - Unity `Assets/`, Godot `*.godot`, game-engine configs → `[GAME]`
 
    **By description (fallback):**
-   - "audit", "security", "vulnerability" → `[SEC]`
-   - "create schema", "migration", "seed" → `[DB]`
+   - "audit", "security", "vulnerability", "OWASP" → `[SEC]`
+   - "pentest", "exploit", "red team", "offensive test" → `[PENTEST]`
+   - "create schema", "migration", "seed", "index" → `[DB]`
    - "endpoint", "route", "service", "middleware" → `[BE]`
    - "component", "page", "style", "form" → `[FE]`
+   - "optimize", "profile", "benchmark", "bundle size", "Core Web Vitals", "LCP/INP/CLS" → `[PERF]`
+   - "document", "README", "API docs", "changelog", "runbook" → `[DOC]`
+   - "debug", "investigate", "root cause", "RCA", "crash" → `[DEBUG]`
+   - "refactor", "extract", "modernize legacy", "characterization test" → `[REFACTOR]`
+   - "SEO", "structured data", "sitemap", "meta tags", "GEO", "E-E-A-T" → `[SEO]`
+   - "mobile", "React Native", "Flutter", "iOS", "Android" → `[MOBILE]`
+   - "wireframe", "mockup", "design system", "design tokens", "user flow" → `[UIUX]`
+   - "game mechanic", "physics", "shader", "multiplayer netcode", "game loop" → `[GAME]`
 
    **Phase defaults:**
    - Phase 1 (Setup) tasks → `[SETUP]`
+   - Polish phase tasks involving docs/perf/debug → `[DOC]`/`[PERF]`/`[DEBUG]` respectively
+
+   **Unknown/ambiguous tasks**: flag for manual review, do NOT guess — it is better to pause than to assign the wrong agent.
 
 5. **Build dependency graph**:
    - Tasks previously marked `[P]` within same phase → no dependency between them

@@ -116,13 +116,34 @@ You **MUST** consider the user input before proceeding (if not empty).
       - **Single-agent tasks**: Execute sequentially within agent domain
       - **Multi-agent parallel tasks** (Claude Code only): If multiple agents have ready tasks simultaneously:
         - Launch via `Agent` tool with `subagent_type` matching the agent:
-          - `[BE]` → `Agent(subagent_type="backend-specialist", isolation="worktree")`
-          - `[FE]` → `Agent(subagent_type="frontend-specialist", isolation="worktree")`
-          - `[DB]` → `Agent(subagent_type="database-architect", isolation="worktree")`
-          - `[OPS]` → `Agent(subagent_type="devops-engineer", isolation="worktree")`
-          - `[SEC]` → `Agent(subagent_type="security-auditor", isolation="worktree")`
-          - `[E2E]` → `Agent(subagent_type="test-engineer", isolation="worktree")`
+          - **Core agents**:
+            - `[BE]` → `Agent(subagent_type="backend-specialist", isolation="worktree")`
+            - `[FE]` → `Agent(subagent_type="frontend-specialist", isolation="worktree")`
+            - `[DB]` → `Agent(subagent_type="database-architect", isolation="worktree")`
+            - `[OPS]` → `Agent(subagent_type="devops-engineer", isolation="worktree")`
+            - `[SEC]` → `Agent(subagent_type="security-auditor", isolation="worktree")`
+            - `[E2E]` → `Agent(subagent_type="test-engineer", isolation="worktree")`
+            - `[PERF]` → `Agent(subagent_type="performance-optimizer", isolation="worktree")`
+            - `[DOC]` → `Agent(subagent_type="documentation-writer", isolation="worktree")`
+            - `[DEBUG]` → `Agent(subagent_type="debugger", isolation="worktree")`
+            - `[REFACTOR]` → `Agent(subagent_type="general-purpose", isolation="worktree")` (legacy-code skill loaded via prompt)
+          - **Conditional agents** (only if tasks exist):
+            - `[SEO]` → `Agent(subagent_type="seo-specialist", isolation="worktree")`
+            - `[MOBILE]` → `Agent(subagent_type="mobile-developer", isolation="worktree")`
+            - `[UIUX]` → `Agent(subagent_type="general-purpose", isolation="worktree")` (ui-ux-pro-max skill loaded via prompt)
+            - `[PENTEST]` → `Agent(subagent_type="penetration-tester", isolation="worktree")`
+            - `[GAME]` → `Agent(subagent_type="game-developer", isolation="worktree")`
         - Each agent prompt includes: task description, file paths, relevant context from plan.md/data-model.md/contracts/
+        - **Skills hint**: Prompt the spawned agent to load its declared skills (from agent frontmatter `skills:` field). Examples:
+          - `[PERF]` → load `performance-profiling`, `clean-code`
+          - `[DOC]` → load `documentation-templates`, `clean-code`
+          - `[DEBUG]` → load `systematic-debugging`, `clean-code`
+          - `[REFACTOR]` → load `legacy-code` (command), `testing-patterns`, `tdd-workflow`
+          - `[UIUX]` → load `ui-ux-pro-max`, `frontend-design`, `tailwind-patterns`
+          - `[SEO]` → load `seo-fundamentals`, `geo-fundamentals`
+          - `[MOBILE]` → load `mobile-design` + framework-specific (e.g., `react-patterns` for RN)
+          - `[GAME]` → load `game-development`
+          - `[PENTEST]` → load `red-team-tactics`, `vulnerability-scanner`
         - Use `isolation="worktree"` for parallel agents to prevent file conflicts
         - Use `run_in_background=true` for non-blocking dispatch where possible
    d. **On task completion**: Mark `[X]` in tasks.md, merge worktree if applicable
@@ -177,10 +198,13 @@ You **MUST** consider the user input before proceeding (if not empty).
    ```text
    | Agent | Completed | Failed | Blocked |
    |-------|-----------|--------|---------|
-   | [DB]  | 4         | 0      | 0       |
-   | [BE]  | 5         | 0      | 0       |
-   | [FE]  | 3         | 1      | 0       |
-   | [E2E] | 0         | 0      | 1       |
+   | [DB]     | 4 | 0 | 0 |
+   | [BE]     | 5 | 0 | 0 |
+   | [FE]     | 3 | 1 | 0 |
+   | [E2E]    | 0 | 0 | 1 |
+   | [PERF]   | 2 | 0 | 0 |
+   | [DOC]    | 1 | 0 | 0 |
+   | [DEBUG]  | 0 | 0 | 0 |
    ```
 
 Note: This command assumes a complete task breakdown exists in tasks.md with agent tags and dependency graph. If tasks are missing these, suggest running `/speckit.tasks` first to regenerate the task list.

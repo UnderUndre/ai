@@ -110,6 +110,10 @@ Is it actively exploited (EPSS >0.5)?
 | Hardcoded secrets | Credential exposure |
 | `verify=False`, SSL disabled | MITM |
 | Unsafe deserialization | RCE |
+| Admin endpoint with `SELECT ... FOR UPDATE` but no rate limit | Connection pool exhaustion / deadlock DoS |
+| Concurrent writers to same JSONB column without version check | Silent lost updates (operator override clobbered by in-flight pipeline) |
+| Caller ignores `{ committed: boolean }` flag from soft-fail API | Stale JS memory corruption (DB has truth, local has lies) |
+| Operator/user ID passed from client body instead of read from JWT | Spoofed attribution in audit logs |
 
 ### Supply Chain (A03)
 
