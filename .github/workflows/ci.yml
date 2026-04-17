@@ -19,9 +19,13 @@ jobs:
       run:
         working-directory: packages/cli
     steps:
+      # NOTE: submodules are INTENTIONALLY not fetched. The CLI package
+      # (`packages/cli/`) has zero runtime or test dependencies on
+      # `underproxy` / `undrllai` — those are unrelated service repos that
+      # happen to live under this monorepo as submodules and are private /
+      # auth-gated for CI runners anyway. Pulling them would both fail
+      # (repository-not-found) and waste minutes for no benefit.
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - uses: actions/setup-node@v4
         with:
@@ -48,11 +52,12 @@ jobs:
         run: node ./bin/helpers.mjs --help
 
   drift-check:
-    name: Config drift — .claude/ vs generated trees
+    name: Config drift — .claude/ sources vs generated trees
     runs-on: ubuntu-latest
     needs: cli-tests
     steps:
       - uses: actions/checkout@v4
+        # Same rationale as cli-tests: no submodules.
 
       - uses: actions/setup-node@v4
         with:
@@ -66,13 +71,37 @@ jobs:
           npm ci
           npm run build
 
-      - name: Run status --strict (detect unsynced generated files)
-        run: node packages/cli/bin/helpers.mjs status --strict
-        # Exit 2 = drift detected. Someone edited .github/prompts/,
-        # .github/instructions/*.instructions.md, .gemini/, GEMINI.md,
-        # or .github/copilot-instructions.md by hand instead of editing
-        # .claude/ and running `sync`. Fix: edit .claude/ source, run
-        # `npx clai-helpers sync`, commit both.
+      - name: Regenerate in-place
+        # This repo is the UPSTREAM template (has helpers.config.ts, no
+        # helpers-lock.json). `status --strict` is the wrong tool here —
+        # that's designed for consumer repos with a lockfile. For upstream
+        # drift detection we run `regen` and then diff.
+        run: node packages/cli/bin/helpers.mjs regen
+
+      - name: Fail if regen produced differences vs committed tree
+        # If regen changed anything that's tracked in git, someone edited
+        # a generated file by hand (.github/prompts/, .gemini/, GEMINI.md,
+        # .github/copilot-instructions.md, .agent/) without running regen
+        # — OR they edited a .claude/ source without regenerating.
+        # Either way: fix by editing .claude/ + CLAUDE.md + .github/
+        # instructions/{coding,persona} sources, then running
+        # `node packages/cli/bin/helpers.mjs regen` and committing.
+        run: |
+          set -e
+          diff_ok=1
+          if ! git diff --exit-code; then
+            diff_ok=0
+          fi
+          untracked=$(git ls-files --others --exclude-standard)
+          if [ -n "$untracked" ]; then
+            echo "::error::regen produced new untracked files:"
+            printf '%s\n' "$untracked"
+            diff_ok=0
+          fi
+          if [ "$diff_ok" -eq 0 ]; then
+            echo "::error::Drift detected. Run \`node packages/cli/bin/helpers.mjs regen\` locally and commit the result."
+            exit 2
+          fi
 
   lint-commits:
     name: Commit messages — Conventional Commits
