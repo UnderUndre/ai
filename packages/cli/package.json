@@ -1,6 +1,6 @@
 {
   "name": "clai-helpers",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "CLI tool that transpiles .claude/ AI config into GitHub Copilot, Gemini, and other AI tool formats",
   "type": "module",
   "bin": {
