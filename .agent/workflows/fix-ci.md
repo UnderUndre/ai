@@ -50,6 +50,7 @@ CI failures almost always fit one of these patterns:
 | **Flaky parallelism / race** | Passes on rerun, or intermittent | Flag as flaky; fix test isolation (separate tmp dirs, avoid shared state) |
 | **Resource limit** | Job timeout, OOM | Raise limits or parallelize differently |
 | **Side-effect of prior change** | "Worked last week, broke now, no code change" | `git log` the workflow + relevant actions versions. A `uses: actions/checkout@v4` update can shift behavior. |
+| **Merge conflict residue** | `<<<<<<<` / `=======` / `>>>>>>>` markers in tracked files; tests or build fail parsing; recent bad merge/rebase on the branch | Route to `/resolve-conflicts` — classify by file class (trivial / generated / slot-protected / semantic / structural) and fix per class. Re-run CI after. |
 
 ### 3. Reproduce locally (if possible)
 
@@ -96,6 +97,7 @@ After fix lands: `gh workflow run ci.yml --ref main` or push a trivial commit.
 - `/debug` — for the deep RCA portion if the classification isn't obvious.
 - `/fix-tests` — if the CI failure is test-related (run `/fix-tests` locally first).
 - `/fix-types` — if CI's type-check step failed.
+- `/resolve-conflicts` — if the failure smells like a bad merge (residual markers, unexpected reverts, broken imports after rebase).
 - `/verify` — after the fix, before retriggering, ensure locally clean.
 
 ## Examples
