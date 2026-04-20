@@ -1,6 +1,18 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { fetchSource } from "../../src/core/fetch.js";
 
+// giget uses its own HTTP client for the tarball download — our
+// `globalThis.fetch` mocks only cover the GitHub API calls inside
+// `resolveLatestRef` / `resolveCommitSha`, NOT the actual download. Without
+// this mock, every test hits the network and slow/flaky connections produce
+// 30s timeouts. The existing tests already expect giget to fail ("not our
+// concern"); this just makes the failure deterministic and instant.
+vi.mock("giget", () => ({
+  downloadTemplate: vi.fn().mockRejectedValue(
+    new Error("giget mocked in unit tests — resolver logic only"),
+  ),
+}));
+
 describe("fetchSource — 'latest' sentinel resolution", () => {
   const realFetch = globalThis.fetch;
 
