@@ -87,10 +87,11 @@ export default {
       ],
     },
 
-    // Shared mirror for non-Claude AI tooling that expects `.agent/` layout
-    // (agents/, skills/, workflows/). Auto-regenerated via identity transformer
-    // so it cannot drift from `.claude/`. Previously maintained by hand and
-    // accumulated ~13 files of drift — Principle II forbids hand-maintained mirrors.
+    // Antigravity IDE target. Reads from `.agent/` layout: agents/, skills/,
+    // workflows/ (commands live in workflows/ for Antigravity, confirmed
+    // empirically against installed app as of 2026-04-25 — NOT .agent/commands/
+    // как утверждают сторонние гайды). Auto-regenerated via identity transformer
+    // so it cannot drift from `.claude/`. Principle II forbids hand-maintained mirrors.
     agent: {
       pipelines: [
         {
@@ -107,6 +108,28 @@ export default {
           transformer: "identity",
           match: ".claude/commands/**/*",
           output: ".agent/workflows/{{subpath}}",
+        },
+      ],
+    },
+
+    // Codex Desktop App target. Confirmed empirically against ChatGPT Desktop
+    // with Codex tool as of 2026-04-25 — the app suggests `.agents/commands/`
+    // (plural `.agents`) for Claude-style commands. Not yet in OpenAI's
+    // published docs; revisit if app changes convention.
+    // AGENTS.md is the cross-tool foundation file read by both Codex Desktop
+    // and Antigravity v1.20.3+ — single output serves both.
+    codex: {
+      pipelines: [
+        {
+          transformer: "identity",
+          match: ".claude/commands/**/*.md",
+          output: ".agents/commands/{{name}}.md",
+        },
+        {
+          transformer: "identity",
+          match: "CLAUDE.md",
+          output: "AGENTS.md",
+          class: "core",
         },
       ],
     },
