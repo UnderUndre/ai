@@ -253,3 +253,17 @@ If validation fails → STOP and fix before writing tasks.md.
    - Shared infrastructure → Setup phase (Phase 1)
    - Foundational/blocking tasks → Foundational phase (Phase 2)
    - Story-specific setup → within that story's phase
+
+## Snapshot Stage (Principle VII)
+
+After `tasks.md` is written (with dependency graph + parallel lanes + agent summary), tag the pipeline stage:
+
+```bash
+.specify/scripts/bash/snapshot-stage.sh tasks <slug>
+```
+
+```powershell
+.specify\scripts\powershell\snapshot-stage.ps1 -Stage tasks -Slug <slug>
+```
+
+Where `<slug>` = the feature directory slug (e.g., `001-orchestrator`). Tag (e.g., `tasks/001-orchestrator/v1`) MUST be reported back. The `tasks/<slug>/v1` tag is the anchor for `/speckit.retrospective` to bound the implementation lifecycle. Idempotent. Skips with warning if not in a git repo.

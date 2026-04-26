@@ -92,3 +92,17 @@ ultrathink
 
 - Use absolute paths
 - ERROR on gate failures or unresolved clarifications
+
+## Snapshot Stage (Principle VII)
+
+After all plan artifacts (`plan.md`, `data-model.md`, `contracts/`, `research.md`, `quickstart.md`) are written and committed (or staged), tag the pipeline stage:
+
+```bash
+.specify/scripts/bash/snapshot-stage.sh plan <slug>
+```
+
+```powershell
+.specify\scripts\powershell\snapshot-stage.ps1 -Stage plan -Slug <slug>
+```
+
+Where `<slug>` = the feature directory slug (e.g., `001-orchestrator`). Tag (e.g., `plan/001-orchestrator/v1`) MUST be reported back to the user. Idempotent. Skips with warning if not in a git repo.

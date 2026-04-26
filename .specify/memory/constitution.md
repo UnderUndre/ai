@@ -46,6 +46,29 @@ Every file in `.claude/` earns its place by being invoked. Decorative clones, st
 - `ultrathink` markers belong on entry points (commands + primary agents + decision-framework skills), not on every file. Each marker costs reasoning budget on load.
 - Persona flavor (catchphrases, aphorisms) MUST be opt-in via a separate transpile target so non-Russian-speaking consumers can omit it.
 
+### VI. Cross-AI Review Gate (NON-NEGOTIABLE)
+
+`/speckit.implement` MUST NOT proceed without explicit gate approval. The gate requires:
+
+1. `/speckit.analyze` written `specs/<slug>/reviews/analyze.md` with verdict ∈ {PASS, OVERRIDDEN}.
+2. At least **2 distinct external AI reviewers** (Codex Desktop, Antigravity, Gemini CLI, Copilot, or Claude in an independent session) wrote `specs/<slug>/reviews/<provider>.md` via `/speckit.review` with verdict ∈ {PASS, OVERRIDDEN}.
+
+Rationale: the model that wrote the spec is the worst auditor of the spec. Independent eyes find what the author already rationalized away. Two reviewers is the minimum to distinguish a real signal from a single-model blind spot.
+
+Override is permitted via `--override-gate <reason>` passed to `/speckit.implement`. Every override is logged to `specs/<slug>/reviews/_gate-override.md` with timestamp, actor, commit SHA, and reason. Frequent overrides on a single feature are an incident, not a workflow.
+
+Reviewers identify themselves by tool — `claude`, `codex`, `antigravity`, `gemini`, `copilot`. Two reviews from the same provider count as one. The gate trusts the provider tag in the VERDICT block; falsifying it defeats the purpose.
+
+### VII. Artifact Versioning
+
+Every pipeline stage that mutates a feature artifact (specify, clarify, plan, tasks, review) MUST tag the commit via `.specify/scripts/{bash,powershell}/snapshot-stage.{sh,ps1}` using the convention `<stage>/<slug>/v<N>`.
+
+- Tags are the **only** historical record. **No parallel `.history/` files** — git is the history. Duplicating into `specs/<slug>/.history/` is an anti-pattern: it drifts and bloats the tree.
+- `/speckit.diff <slug>` reads tags to compare iterations without speculative file copies.
+- `/speckit.retrospective` reads `tasks/<slug>/v1` → HEAD to bound the implementation lifecycle and surface lessons-learned.
+- The snapshot script is **idempotent** via `--points-at HEAD` guard — re-running a speckit command on the same commit reuses the existing tag instead of polluting the namespace.
+- Reviewers (`/speckit.review`) only need ONE of them to call snapshot — the idempotency guard ensures parallel reviewers don't duplicate.
+
 ## Technical Constraints
 
 - **Runtime**: Node.js ≥20. Enforced by `packages/cli/package.json#engines`.
@@ -69,7 +92,11 @@ Every file in `.claude/` earns its place by being invoked. Decorative clones, st
 
 ### `/speckit.*` pipeline for features
 
-`/speckit.specify` → `/speckit.clarify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.analyze` → `/speckit.implement` → `/speckit.status`. This file (the constitution) is loaded at the Constitution Check gate of `/speckit.plan`. Violations block until resolved.
+`/speckit.specify` → `/speckit.clarify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.analyze` → **`/speckit.review`** (×2 from external AI tools) → `/speckit.implement` → `/speckit.status`.
+
+This file (the constitution) is loaded at the Constitution Check gate of `/speckit.plan`. Violations block until resolved.
+
+`/speckit.implement` enforces Principle VI's cross-AI review gate before any task execution: requires `analyze.md` PASS + ≥2 distinct external reviewers PASS in `specs/<slug>/reviews/`. Override via `--override-gate <reason>` is logged.
 
 ### Quality gates before `done`
 
@@ -90,4 +117,10 @@ Every file in `.claude/` earns its place by being invoked. Decorative clones, st
 4. **Complexity must be justified.** Every new agent, transformer, target, or skill adds load to every downstream session. A change that doesn't earn its weight is rejected.
 5. **Anti-sycophancy applies to review of this file too.** If a principle above is wrong for the project, say so and propose an amendment. Don't quietly ignore it.
 
-**Version**: 1.0.0 | **Ratified**: 2026-04-17 | **Last Amended**: 2026-04-17
+**Version**: 1.2.0 | **Ratified**: 2026-04-17 | **Last Amended**: 2026-04-26
+
+### Changelog
+
+- **1.2.0** (2026-04-26) — Added Principle VII: Artifact Versioning. Every speckit pipeline stage (specify/clarify/plan/tasks/review) now tags the commit via `snapshot-stage.{sh,ps1}` using `<stage>/<slug>/v<N>` convention. Enables `/speckit.diff` and `/speckit.retrospective` without parallel `.history/` files. Idempotent via `--points-at HEAD` guard.
+- **1.1.0** (2026-04-26) — Added Principle VI: Cross-AI Review Gate (NON-NEGOTIABLE). `/speckit.implement` now requires `/speckit.analyze` PASS + ≥2 external reviewer PASS via `/speckit.review`. Override via `--override-gate <reason>` with audit log.
+- **1.0.0** (2026-04-17) — Initial ratification.

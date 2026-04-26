@@ -254,3 +254,17 @@ Success criteria must be:
 - "Database can handle 1000 TPS" (implementation detail, use user-facing metric)
 - "React components render efficiently" (framework-specific)
 - "Redis cache hit rate above 80%" (technology-specific)
+
+## Snapshot Stage (Principle VII)
+
+After the spec file is written and committed (or staged), tag the pipeline stage:
+
+```bash
+.specify/scripts/bash/snapshot-stage.sh spec <slug>
+```
+
+```powershell
+.specify\scripts\powershell\snapshot-stage.ps1 -Stage spec -Slug <slug>
+```
+
+Where `<slug>` = the directory slug (e.g., `001-orchestrator`). Tag printed by the script (e.g., `spec/001-orchestrator/v1`) MUST be reported back to the user. Idempotent — re-running on the same commit re-uses the existing tag. Skips with warning if not in a git repo.
