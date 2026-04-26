@@ -44,7 +44,19 @@ Given that feature description, do this:
      - "Create a dashboard for analytics" → "analytics-dashboard"
      - "Fix payment processing timeout bug" → "fix-payment-timeout"
 
-2. **Check for existing branches before creating new one**:
+2. **Detect prior `/speckit.start` worktree** (NEW):
+
+   If the current working directory matches `.claude/worktrees/<NNN>-<slug>/` (regex: `\.claude[/\\]worktrees[/\\]([0-9]{3})-([a-z0-9-]+)`), the feature was already initialized via `/speckit.start`:
+
+   - Parse `N` and `slug` from the path.
+   - Verify `git rev-parse --abbrev-ref HEAD` returns `feature/<N>-<slug>` (sanity check — otherwise warn but proceed).
+   - Verify `specs/<N>-<slug>/` directory exists (created by `/speckit.start`).
+   - **SKIP** the rest of step 2 (branch creation, numbering, `create-new-feature.sh` invocation). Use the existing branch + spec dir.
+   - Set `BRANCH_NAME = feature/<N>-<slug>`, `SPEC_FILE = specs/<N>-<slug>/spec.md`, and proceed to step 3 (load spec template).
+
+   Otherwise (legacy direct-invocation flow), continue with full branch creation:
+
+3. **Check for existing branches before creating new one**:
 
    a. First, fetch all remote branches to ensure we have the latest information:
 
