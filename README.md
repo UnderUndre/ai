@@ -83,6 +83,7 @@ Your custom content here. Never overwritten by sync.
 | `specs/` | Feature specs, plans, contracts, tasks |
 | `.specify/` | Spec Kit pipeline: memory (constitution), scripts, templates |
 | `.github/instructions/` | Hand-written Copilot instruction files (coding, persona, project) |
+| `specs/main/` | **Canonical project architecture + requirements** (read this for deep-dive) |
 
 ## Development
 

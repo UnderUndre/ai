@@ -71,14 +71,7 @@ Every pipeline stage that mutates a feature artifact (specify, clarify, plan, ta
 
 ## Technical Constraints
 
-- **Runtime**: Node.js ≥20. Enforced by `packages/cli/package.json#engines`.
-- **Language**: TypeScript 5.7+, strict mode, no `any`.
-- **Module system**: ESM only. `"type": "module"` in package.json is non-negotiable; no CommonJS fallback.
-- **Distribution**: `dist/` compiled via `tsc`. `bin/helpers.mjs` is the entry. Build is enforced by `prepublishOnly`.
-- **Tests**: Vitest unit + integration. Golden-fixture tests in `tests/fixtures/golden/` for every transformer.
-- **Logging**: `consola` only. `console.log` is banned by lint and code review.
-- **Paths**: Cross-platform via `pathe`. Windows primary dev environment, Git Bash compatible.
-- **Scripts**: `.specify/scripts/powershell/*.ps1` is the source of truth; bash ports live alongside for *nix parity.
+> Moved to [`../../specs/main/requirements.md`](../../specs/main/requirements.md) §2.1 (single source of truth). Constitution governs **principles**; concrete tech-stack constraints live alongside requirements where they belong.
 
 ## Development Workflow
 
@@ -117,10 +110,11 @@ This file (the constitution) is loaded at the Constitution Check gate of `/speck
 4. **Complexity must be justified.** Every new agent, transformer, target, or skill adds load to every downstream session. A change that doesn't earn its weight is rejected.
 5. **Anti-sycophancy applies to review of this file too.** If a principle above is wrong for the project, say so and propose an amendment. Don't quietly ignore it.
 
-**Version**: 1.2.0 | **Ratified**: 2026-04-17 | **Last Amended**: 2026-04-26
+**Version**: 1.3.0 | **Ratified**: 2026-04-17 | **Last Amended**: 2026-05-06
 
 ### Changelog
 
+- **1.3.0** (2026-05-06) — Moved "Technical Constraints" section out of constitution to [`specs/main/requirements.md`](../../specs/main/requirements.md) §2.1 as part of project-doc consolidation. Constitution now governs **principles only**; concrete tech-stack constraints live with requirements. No principle changes; no behavioral diff for `/speckit.*` commands.
 - **1.2.0** (2026-04-26) — Added Principle VII: Artifact Versioning. Every speckit pipeline stage (specify/clarify/plan/tasks/review) now tags the commit via `snapshot-stage.{sh,ps1}` using `<stage>/<slug>/v<N>` convention. Enables `/speckit.diff` and `/speckit.retrospective` without parallel `.history/` files. Idempotent via `--points-at HEAD` guard.
 - **1.1.0** (2026-04-26) — Added Principle VI: Cross-AI Review Gate (NON-NEGOTIABLE). `/speckit.implement` now requires `/speckit.analyze` PASS + ≥2 external reviewer PASS via `/speckit.review`. Override via `--override-gate <reason>` with audit log.
 - **1.0.0** (2026-04-17) — Initial ratification.
