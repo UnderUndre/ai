@@ -100,6 +100,41 @@ Full routing rules incl. cross-domain escalation: [`.github/instructions/coding/
 
 ---
 
+## Intent Routing
+
+**Map user utterances → first action.** Use this BEFORE diving in. Where the user's request matches a row, prefer the prescribed command/agent over improvising. If unsure → `/dispatch <user request>` to explicitly route.
+
+| User says (RU/EN) | First action | Then |
+|---|---|---|
+| "brainstorm X", "explore X", "обкашляю X" | `/brainstorm X` | wait for ≥3 options |
+| "scrutinize", "find holes", "найди дыры", "devil's advocate" | `/questions_ideas` | backward/sideways audit |
+| "fix bug", "debug", "не работает", "сломалось" | spawn `debugger` agent + `systematic-debugging` skill | reproduce → isolate → fix |
+| "implement X", "add feature X" (>3 files OR new domain) | `/speckit.start` → `.specify` → `.plan` → `.tasks` → `.implement` | full pipeline |
+| "implement X" (≤3 files, in-domain) | identify domain (Agent Routing table) → spawn agent → Plumber's Loop | inline |
+| "review", "code review", "ревью" | spawn `code-reviewer` OR `/code_review` | structured review |
+| "test X", "write tests", "покрой тестами" | spawn `test-engineer` + `tdd-workflow` skill | RED-GREEN-REFACTOR |
+| "tests failing", "тесты упали" | `/fix-tests` | classify → fix |
+| "CI failing", "CI упал", paste CI log | `/fix-ci` | classify → propose |
+| "TS errors", "fix types", "тайпы сломаны" | `/fix-types` | cascade order, earliest first |
+| "merge conflicts", "конфликты" | `/resolve-conflicts` | per-class strategy |
+| "ship", "release", "publish", "релиз" | `/bump` (loads semver-versioning) | confirm → `npm publish` after approval |
+| "verify", "проверь всё", "дай статус" | `/verify` | read-only quality gate |
+| "deps health", "проверь зависимости" | `/deps-check` | npm outdated + audit, no auto-upgrade |
+| "perf check", "бенчмарки" | `/perf-check` | benchmark or scaffold |
+| "what changed", "diff", "дай diff" | `/diff` | git diff snapshot |
+| "who wrote this line", "blame X:Y" | `/blame-line` | author + commit + permalink |
+| "regen targets", "re-transpile" (upstream only) | `/regen` | wraps `helpers regen` |
+| "session-end", "summarize session", "запомни" | `/improve` (manual) OR Stop hook (auto) | capture lessons |
+
+**Two routing principles:**
+
+1. **Don't improvise when a command exists.** Improvisation = inconsistent. The command's prompt is the source of truth for that action.
+2. **Don't double-route.** If user types `/fix-ci` directly — that IS the dispatch. No need to also call `/dispatch`. `/dispatch` is the disambiguation entry point for free-text intents.
+
+Full mapping logic + examples: [`.claude/commands/dispatch.md`](.claude/commands/dispatch.md).
+
+---
+
 ## AI-Generated Code Guardrails
 
 Универсальные TS-грабли. Webapp-specific помечены [web].
