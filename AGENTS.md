@@ -173,14 +173,30 @@ See [`.claude/skills/semver-versioning/SKILL.md`](.claude/skills/semver-versioni
 ### SpecKit (feature development pipeline)
 
 ```bash
-/speckit.specify      # Draft feature spec
-/speckit.clarify      # Resolve ambiguities
-/speckit.plan         # Technical plan
-/speckit.tasks        # Dependency graph, agent routing
-/speckit.analyze      # Cross-artifact consistency check
-/speckit.implement    # Dispatch to agents with worktree isolation
-/speckit.status       # Live progress dashboard
+# Canonical flow
+/speckit.start <desc>        # (optional) Isolated worktree + numbering before specify
+/speckit.specify <desc>      # Draft spec.md (skips numbering inside a worktree)
+/speckit.clarify             # Resolve ambiguities, append to spec.md
+/speckit.plan                # plan.md, data-model.md, contracts/, quickstart.md
+/speckit.tasks               # tasks.md with dependency graph + agent routing
+/speckit.checklist [domain]  # Library: security/performance/accessibility/i18n/api-contract/data-migration — or custom
+/speckit.analyze             # Cross-artifact consistency → reviews/analyze.md (VERDICT block)
+/speckit.review              # Independent cross-AI review → reviews/<provider>.md (run in Codex/Antigravity/Gemini/Copilot)
+/speckit.implement           # Pre-flight gate: analyze PASS + ≥2 external reviewers PASS (Principle VI)
+                             # Override: --override-gate "<reason>" (logged to reviews/_gate-override.md)
+
+# Inspection / observability
+/speckit.status              # Live progress dashboard
+/speckit.diff <slug> [from] [to]  # Compare any two <stage>/<slug>/v<N> tags (Principle VII)
+/speckit.scope               # Multi-feature overlap matrix → specs/_overlap.md
+/speckit.retrospective       # Post-implement lessons → retrospective.md + constitution candidates
 ```
+
+**Constitution gates** (`.specify/memory/constitution.md` v1.2.0):
+- **Principle VI** (Cross-AI Review Gate, NON-NEGOTIABLE): `/speckit.implement` blocks until `analyze.md` PASS + ≥2 external reviewer PASS.
+- **Principle VII** (Artifact Versioning): every speckit stage tags via `snapshot-stage.{sh,ps1}` as `<stage>/<slug>/v<N>`. No `.history/` files — git is the history.
+
+**Cross-AI review setup**: `.claude/commands/speckit.review.md` transpiles to Antigravity (`.agent/workflows/`) and Codex Desktop (`.agents/commands/`) via `helpers regen` — same source, run from each tool, each writes its review to `specs/<slug>/reviews/<provider>.md`.
 
 **Verification**: After every code change → `npm run validate` in `packages/cli/`. After every feature → run relevant tests. Do not report "done" until verification passes.
 
