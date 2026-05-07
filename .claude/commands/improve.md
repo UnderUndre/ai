@@ -45,7 +45,53 @@ For every finding from the review, ask: **"Would every other consumer of `UnderU
 
 ---
 
-## 2. Review Output — Three Categories
+## 2. Review Output — Four Categories
+
+### 2.0 Promote Staged Patterns from `knowledge/patterns/` (MUST be first)
+
+Before generating new findings from this session, review **already-captured patterns** waiting for promotion. Mature candidates beat fresh ones — they've sat long enough to confirm they're real, not session noise.
+
+**Workflow:**
+
+1. **Scan**:
+   ```bash
+   test -d knowledge/patterns/ && grep -l "^status: draft" knowledge/patterns/*.md 2>/dev/null
+   ```
+   If `knowledge/patterns/` doesn't exist or no `status: draft` entries → skip §2.0 entirely. No `/learn` history yet.
+
+2. **Group** by `candidate-promotion-target` from each entry's frontmatter:
+   - `skills/<name>` → propose merging into `.claude/skills/<name>/SKILL.md`
+   - `agents/<name>` → propose merging into `.claude/agents/<name>.md`
+   - `coding-anti-pattern` → propose row in `.github/instructions/coding/copilot-instructions.md` §14
+   - `_TBD_` → ask user where to route (don't guess silently)
+
+3. **Triage** each entry:
+   | Signal | Decision |
+   |--------|----------|
+   | Pattern recurred (>1 commit referenced, OR 2+ entries on similar topic) | **Promote** — strong evidence |
+   | Single occurrence, but high-impact (production bug, security) | **Promote** — risk-weighted |
+   | Single occurrence, low-impact, captured >60 days ago | **Close as won't-fix** — set `status: closed`, add note "low signal, not promoted" |
+   | Single occurrence, low-impact, recent | **Defer** — leave as draft, revisit next cycle |
+
+4. **Propose promotion** with concrete edit:
+   - Source file (knowledge/patterns/<slug>.md): show summary
+   - Target file: exact path + section + proposed insertion text (≤15 lines)
+   - Confirmation requested before write — no auto-promote (Principle VIII)
+
+5. **On accepted promotion**:
+   - Apply the edit to the target file
+   - Update source frontmatter: `status: promoted`, add `promoted-to: <target-path>`, `promoted-on: <YYYY-MM-DD>`
+   - Source stays in `knowledge/patterns/` as historical record (not deleted) — git tracks it; `/improve` future runs skip non-draft entries
+
+6. **On accepted closure**:
+   - Update frontmatter: `status: closed`, `closed-reason: <one line>`, `closed-on: <YYYY-MM-DD>`
+   - Stays in tree for audit
+
+**Constraints**:
+- Never auto-promote without user confirmation (Principle VIII fuzzy signals).
+- Never delete `knowledge/patterns/` entries — historical record is part of the system.
+- Group similar patterns ("3 entries about CRLF" → propose ONE consolidated promotion, not three).
+- If `candidate-promotion-target` is wrong (the pattern fits a different home better) — propose the correct target + ask before changing.
 
 ### 2.1 New Rules (mistakes → prevention)
 
@@ -161,6 +207,12 @@ If drift is detected, someone touched a managed file locally — revisit §3.2.A
 - Repo: <upstream | consumer | standalone>
 - Remote: <url>
 - helpers-lock.json: <present|absent>
+- knowledge/patterns/ drafts: <count> (older than 30d: <count>)
+
+### Promotions from staged patterns (§2.0)
+- [ ] **promote** `knowledge/patterns/<slug>.md` → `.claude/skills/<name>/SKILL.md` §<section> — recurred N times, candidate-promotion-target match
+- [ ] **close** `knowledge/patterns/<other-slug>.md` — single occurrence >60d, low-signal — set status: closed
+- [ ] **defer** `knowledge/patterns/<another>.md` — recent, single occurrence — revisit next cycle
 
 ### Rules to Add
 - [ ] **[shared]** `.github/instructions/coding/copilot-instructions.md` §14 — <rule> — triggered by: <what went wrong>
