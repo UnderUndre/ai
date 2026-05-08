@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain — **1 remaining (FR-012, discovery strategy)**, by design within the 3-marker budget; resolve via `/speckit.clarify`
+- [x] No [NEEDS CLARIFICATION] markers remain — original FR-012 (discovery strategy) resolved via `/speckit.clarify` Session 2026-05-06 Q2 (pivoted to GitHub API as source of truth, which subsumes the local-strategy question)
 - [x] Requirements are testable and unambiguous (excluding the marked one)
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,6 +31,7 @@
 
 ## Notes
 
-- One [NEEDS CLARIFICATION] remains in FR-012 (discovery strategy: scan vs cache vs explicit registry). This is the single highest-impact decision and shapes the entire UX of the listing command. Recommended resolution path: `/speckit.clarify` will surface this with options + implications.
-- All other potentially-ambiguous decisions resolved via reasonable defaults documented in the Assumptions section (local-only, on-demand, sequential, dirty-tree skip, no new auth, no auto-commit).
-- Items marked incomplete require spec updates before `/speckit.plan`.
+- All [NEEDS CLARIFICATION] markers resolved via `/speckit.clarify` Session 2026-05-06.
+- Q1 (form factor): CLI subcommand within existing clai-helpers binary.
+- Q2 (source of truth): GitHub API only; cross-machine inherent. Discovery + status both read from each repo's default-branch `helpers-lock.json`. Local-only repos out of scope for v1.
+- Q3 (sync mechanism + configurability): three modes (`pr`, `push`, `patch`) with safe default `pr`, per-session `--mode` flag, global `defaultSyncMode` in user config. Per-repo overrides deferred to v2. Spec FRs 005/006/010 + P2 acceptance scenarios reflect this.
