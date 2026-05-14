@@ -154,6 +154,8 @@ interface SyncResult {
   patchPath?: string;
   /** Populated when outcome ∈ {'failed', 'skipped'}. */
   reason?: string;
+  /** Error code for machine identification. */
+  errorCode?: ErrorCode;
   /** Wall-clock duration (ms). */
   durationMs: number;
 }
@@ -164,8 +166,8 @@ type SyncOutcome = "succeeded" | "failed" | "skipped" | "no-op";
 **Outcomes**:
 - `succeeded`: bump applied per chosen mode; `refBefore`/`refAfter` populated.
 - `no-op`: pipeline produced no diff (already up-to-date); not counted as failure or skip in summary.
-- `skipped`: prerequisite not met (FR-006); populated `reason`.
-- `failed`: error occurred during sync (network, write conflict, branch protection blocker); populated `reason`.
+- `skipped`: prerequisite not met (FR-006; e.g. branch protection blocker, archived repo); populated `reason` and `errorCode`.
+- `failed`: error occurred during sync (network, write conflict); populated `reason` and `errorCode`.
 
 ---
 
@@ -255,6 +257,7 @@ type FleetErrorCode =
   | "github/rate-limited"
   | "github/network"
   | "github/repo-not-found"
+  | "github/api-error"
   | "lockfile/malformed"
   | "git/clone-failed"
   | "git/push-rejected"

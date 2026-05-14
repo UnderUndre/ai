@@ -127,13 +127,12 @@ Continue? [Y/n] y
 
 [1/3] UnderUndre/myproject     ✓ PR opened: https://github.com/UnderUndre/myproject/pull/42
 [2/3] UnderUndre/sandbox       ⊘ already up-to-date (no-op)
-[3/3] myorg/internal-tool      ✗ failed: branch protection requires reviewers; retry with --mode pr if you intended pr (this was --mode push)
+[3/3] myorg/internal-tool      ⊘ skipped: branch protection requires reviewers (FR-006)
 
 Summary:
   Succeeded: 1 (PRs: 1)
   No-op:     1
-  Failed:    1
-  Skipped:   0
+  Skipped:   1 (branch protection: 1)
   Duration:  4.2s
 ```
 

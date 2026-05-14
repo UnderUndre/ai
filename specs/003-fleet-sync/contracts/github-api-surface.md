@@ -8,7 +8,7 @@ Exact endpoints used, parameters, and error handling. Stable contract between `c
 |----------|--------|---------|
 | `GET /user/repos?affiliation=owner&per_page=100&page={n}` | GET | Enumerate authenticated user's repos |
 | `GET /orgs/{org}/repos?type=all&per_page=100&page={n}` | GET | Enumerate org repos |
-| `GET /repos/{owner}/{repo}` | GET | Resolve default branch + state (archived/disabled) |
+| `GET /repos/{owner}/{repo}` | GET | Resolve repo details (archived/disabled, default branch) — only used if explicit `--repo` provided and not already discovered |
 | `GET /repos/{owner}/{repo}/contents/helpers-lock.json?ref={defaultBranch}` | GET | Read lockfile content (Base64-encoded) |
 | `GET /repos/{owner}/{repo}/commits?path=helpers-lock.json&sha={defaultBranch}&per_page=1` | GET | Most recent commit touching lockfile (`lastSyncAt`) |
 | `GET /repos/UnderUndre/ai/releases/latest` | GET | Latest release of clai-helpers itself (resolved once per session) |
@@ -64,13 +64,13 @@ Strategy:
 | HTTP | Treatment |
 |------|-----------|
 | `200` / `201` | Success, parse JSON |
-| `304` | Treat as success (cache hit; in v1 we don't send conditional requests, so unexpected — log and treat as 200) |
+| `304` | Not Modified (cache hit). Return empty body/previous data without parsing JSON. |
 | `401` | `auth/missing` or `auth/insufficient-scope` (depends on whether token was sent) |
 | `403` (with rate-limit headers) | Apply rate-limit retry strategy |
 | `403` (no rate-limit headers) | `auth/insufficient-scope` |
 | `404` | `github/repo-not-found` (e.g., explicit `--repo` arg names a non-existent repo) |
 | `409` (PR open with conflict) | `git/push-rejected` or skip "PR conflict, repo has divergent default branch" |
-| `422` (PR creation refused) | Surface validation errors — branch already exists, base ref invalid, etc. Map to `git/push-rejected` |
+| `422` (PR creation refused) | Surface validation errors — branch already exists, base ref invalid, etc. Map to `github/api-error` |
 | `5xx` | Retry once with 2s backoff, then `github/network` |
 
 ## Lockfile parsing
