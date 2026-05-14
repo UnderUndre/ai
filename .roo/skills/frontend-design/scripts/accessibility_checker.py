@@ -48,16 +48,22 @@ def check_accessibility(file_path: Path) -> list:
     try:
         content = file_path.read_text(encoding='utf-8', errors='ignore')
         
-        # Check for form inputs without labels
+        # Check for form inputs without programmatically associated labels
         inputs = re.findall(r'<input[^>]*>', content, re.IGNORECASE)
         for inp in inputs:
             if 'type="hidden"' not in inp.lower():
-                if 'aria-label' not in inp.lower() and 'id=' not in inp.lower():
-                    issues.append("Input without label or aria-label")
+                has_label = 'aria-label' in inp.lower() or 'aria-labelledby' in inp.lower()
+                if not has_label and 'id=' in inp.lower():
+                    # id present — check if a matching <label for="..."> exists in the document
+                    inp_id = re.search(r'id=["\']([^"\']+)["\']', inp, re.IGNORECASE)
+                    if inp_id and re.search(r'<label[^>]*for=["\']' + re.escape(inp_id.group(1)) + r'["\']', content, re.IGNORECASE):
+                        has_label = True
+                if not has_label:
+                    issues.append("Input without associated label, aria-label, or aria-labelledby")
                     break
         
-        # Check for buttons without accessible text
-        buttons = re.findall(r'<button[^>]*>[^<]*</button>', content, re.IGNORECASE)
+        # Check for buttons without accessible text (allow nested HTML like icons/spans)
+        buttons = re.findall(r'<button[^>]*>.*?</button>', content, re.IGNORECASE | re.DOTALL)
         for btn in buttons:
             # Check if button has text content or aria-label
             if 'aria-label' not in btn.lower():

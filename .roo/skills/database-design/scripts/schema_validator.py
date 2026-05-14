@@ -76,7 +76,7 @@ def validate_prisma_schema(file_path: Path) -> list:
             # Check for @@index suggestions
             foreign_keys = re.findall(r'(\w+Id)\s+\w+', model_body)
             for fk in foreign_keys:
-                if f'@@index([{fk}])' not in content and f'@@index(["{fk}"])' not in content:
+                if f'@@index([{fk}])' not in model_body and f'@@index(["{fk}"])' not in model_body:
                     issues.append(f"Consider adding @@index([{fk}]) for better query performance in {model_name}")
         
         # Check for enum definitions

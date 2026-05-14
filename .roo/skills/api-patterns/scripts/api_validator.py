@@ -148,11 +148,15 @@ def check_api_code(file_path: Path) -> dict:
         if has_rate:
             passed.append("[OK] Rate limiting present")
         
-        # Check for logging
-        log_patterns = [r'console\.log', r'logger\.', r'logging\.', r'log\.']
+        # Check for logging (structured logging only — console.log is forbidden in production)
+        log_patterns = [r'logger\.', r'logging\.', r'log\.']
         has_logging = any(re.search(p, content) for p in log_patterns)
         if has_logging:
-            passed.append("[OK] Logging present")
+            passed.append("[OK] Structured logging present")
+
+        # Flag console.log as anti-pattern (forbidden in production per project standards)
+        if re.search(r'console\.log', content):
+            issues.append("[!] console.log found — use structured logger instead")
         
     except Exception as e:
         issues.append(f"[X] Read error: {e}")
