@@ -157,7 +157,7 @@ export async function computeSyncPlan(
 
 // ─── Apply Phase ────────────────────────────────
 
-async function applySyncPlan(
+export async function applySyncPlan(
   root: string,
   lock: LockFile,
   plan: SyncPlan,
