@@ -15,11 +15,16 @@ export async function pickEntries(entries: FleetEntry[]): Promise<Selection> {
     return { entries: [], source: { kind: "interactive" } };
   }
 
-  const choices = entries.map((e) => ({
-    name: `${e.fullName} (${e.pinnedRef} → ${e.latestRef}${e.hasDrift ? " ⚠" : ""})`,
-    value: e,
-    checked: false,
-  }));
+  const choices = entries.map((e) => {
+    const version = e.latestRef && e.latestRef !== "unknown"
+      ? `${e.pinnedRef} → ${e.latestRef}`
+      : e.pinnedRef;
+    return {
+      name: `${e.fullName} (${version}${e.hasDrift ? " ⚠" : ""})`,
+      value: e,
+      checked: false,
+    };
+  });
 
   const selected = await checkbox({
     message: "Select repos to sync:",

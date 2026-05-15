@@ -94,7 +94,9 @@ export function renderFleetTable(
   for (const entry of entries) {
     const repoName = truncateRepoName(entry.fullName);
     const pinned = formatRef(entry.pinnedRef, entry.defaultBranch);
-    const latest = formatRef(entry.latestRef);
+    const latest = entry.latestRef && entry.latestRef !== "unknown"
+      ? formatRef(entry.latestRef)
+      : "—";
     const drift = formatDrift(entry.hasDrift, noColor);
     const lastSync = formatLastSync(entry.lastSyncAt);
 
