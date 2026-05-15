@@ -74,7 +74,7 @@ vi.mock("node:child_process", () => ({
 
 // ── Import after mocks ───────────────────────────────────────────────
 
-import { syncPr } from "../../../../src/core/fleet/modes/pr-mode.js";
+import { syncPr, buildBranchName } from "../../../../src/core/fleet/modes/pr-mode.js";
 
 // ── Tests ────────────────────────────────────────────────────────────
 
@@ -164,5 +164,68 @@ describe("syncPr", () => {
   it("cleanup is called even on success", async () => {
     await syncPr(TEST_ENTRY, AUTH, "v0.4.0", mockFetch);
     expect(mockCleanup).toHaveBeenCalledTimes(1);
+  });
+
+  // ── 6. Empty latestRef → valid branch name (regression) ────────────
+
+  it("uses fallback branch name when latestRef is empty", async () => {
+    const result = await syncPr(TEST_ENTRY, AUTH, "", mockFetch);
+
+    expect(result.outcome).toBe("succeeded");
+    // Verify git was called with a valid branch name (no trailing /)
+    const checkoutCall = mockExecFileAsync.mock.calls.find(
+      (call: unknown[]) => Array.isArray(call) && call[0] === "git" && Array.isArray(call[1]) && call[1][0] === "checkout",
+    );
+    expect(checkoutCall).toBeDefined();
+    const branchArg = (checkoutCall as unknown[])[1] as string[];
+    expect(branchArg[2]).toBe("clai-helpers-bump/sync");
+    // Must NOT end with /
+    expect(branchArg[2]).not.toMatch(/\/$/);
+  });
+
+  // ── 7. "unknown" latestRef → valid branch name ────────────────────
+
+  it("uses 'unknown' as suffix when discovery falls back", async () => {
+    const result = await syncPr(TEST_ENTRY, AUTH, "unknown", mockFetch);
+
+    expect(result.outcome).toBe("succeeded");
+    const checkoutCall = mockExecFileAsync.mock.calls.find(
+      (call: unknown[]) => Array.isArray(call) && call[0] === "git" && Array.isArray(call[1]) && call[1][0] === "checkout",
+    );
+    expect(checkoutCall).toBeDefined();
+    const branchArg = (checkoutCall as unknown[])[1] as string[];
+    expect(branchArg[2]).toBe("clai-helpers-bump/unknown");
+  });
+});
+
+// ── buildBranchName unit tests ────────────────────────────────────────
+
+describe("buildBranchName", () => {
+  it("returns prefixed branch name for valid version", () => {
+    expect(buildBranchName("v1.2.3")).toBe("clai-helpers-bump/v1.2.3");
+  });
+
+  it("falls back to 'sync' when latestRef is empty string", () => {
+    expect(buildBranchName("")).toBe("clai-helpers-bump/sync");
+  });
+
+  it("falls back to 'sync' when latestRef is whitespace only", () => {
+    expect(buildBranchName("   ")).toBe("clai-helpers-bump/sync");
+  });
+
+  it("strips trailing slashes from the suffix", () => {
+    expect(buildBranchName("v1.0.0/")).toBe("clai-helpers-bump/v1.0.0");
+  });
+
+  it("collapses consecutive slashes", () => {
+    expect(buildBranchName("v1.0.0//beta")).toBe("clai-helpers-bump/v1.0.0/beta");
+  });
+
+  it("never produces a branch name ending with /", () => {
+    const cases = ["", "  ", "v1/", "v1//", "v1.0.0/"];
+    for (const input of cases) {
+      const result = buildBranchName(input);
+      expect(result).not.toMatch(/\/$/);
+    }
   });
 });

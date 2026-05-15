@@ -18,7 +18,7 @@ export async function pickEntries(entries: FleetEntry[]): Promise<Selection> {
   const choices = entries.map((e) => ({
     name: `${e.fullName} (${e.pinnedRef} → ${e.latestRef}${e.hasDrift ? " ⚠" : ""})`,
     value: e,
-    checked: e.hasDrift,
+    checked: false,
   }));
 
   const selected = await checkbox({

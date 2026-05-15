@@ -89,9 +89,9 @@ export async function discoverFleet(
   try {
     latestRef = await getLatestRelease("UnderUndre", "ai", auth, fetchFn);
   } catch (e) {
-    // If we can't resolve latest release, use empty string — drift will show true
+    // If we can't resolve latest release, use "unknown" — drift will show true
     log.warn("Failed to resolve latest clai-helpers release:", e instanceof Error ? e.message : String(e));
-    latestRef = "";
+    latestRef = "unknown";
   }
 
   // Step 2: Enumerate repos

@@ -14,6 +14,20 @@ const execFileAsync = promisify(execFile);
 
 type FetchLike = (input: string | URL, init?: RequestInit) => Promise<Response>;
 
+const BRANCH_PREFIX = "clai-helpers-bump";
+
+/**
+ * Build a valid git branch name from the latest ref.
+ * Falls back to "sync" when the ref is empty/undefined,
+ * and strips characters that would make the branch name invalid.
+ */
+export function buildBranchName(latestRef: string): string {
+  const suffix = latestRef && latestRef.trim() ? latestRef.trim() : "sync";
+  // Strip trailing slashes and consecutive slashes to keep the name valid
+  const sanitized = suffix.replace(/\/+/g, "/").replace(/\/$/, "");
+  return `${BRANCH_PREFIX}/${sanitized}`;
+}
+
 /**
  * Sync a repo by creating a pull request.
  *
@@ -32,7 +46,7 @@ export async function syncPr(
   fetchFn?: FetchLike,
 ): Promise<SyncResult> {
   const start = Date.now();
-  const branchName = `clai-helpers-bump/${latestRef}`;
+  const branchName = buildBranchName(latestRef);
   const resolvedFetch = fetchFn ?? globalThis.fetch;
 
   try {
