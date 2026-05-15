@@ -17,7 +17,7 @@ Follow commit conventions from `.github/instructions/coding/git/copilot-instruct
    [footer if needed]
    ```
 
-5. **Proceed with commit directly** — no manual approval needed (as per user request).
+5. **Present staged changes + message for user confirmation** — show `git diff --cached` and proposed message, wait for explicit approval before committing.
 6. **Stage specific files** — never `git add .` or `git add -A`
 7. **Commit with HEREDOC**:
 

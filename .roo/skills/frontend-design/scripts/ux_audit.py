@@ -541,7 +541,7 @@ class UXAuditor:
         # 4.5 WCAG Contrast Pattern Check
         # Look for potential low-contrast combinations
         light_bg_light_text = bool(re.search(r'bg-(?:gray|slate|zinc)-50|bg-white.*text-(?:gray|slate)-[12]', content))
-        dark_bg_dark_text = bool(re.search(r'bg-(?:gray|slate|zinct)-9|bg-black.*text-(?:gray|slate)-[89]', content))
+        dark_bg_dark_text = bool(re.search(r'bg-(?:gray|slate|zinc)-9|bg-black.*text-(?:gray|slate)-[89]', content))
         if light_bg_light_text or dark_bg_dark_text:
             self.warnings.append(f"[Color] {filename}: Possible low-contrast combination detected. Verify WCAG AA (4.5:1 for text).")
 

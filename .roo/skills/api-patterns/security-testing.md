@@ -29,7 +29,7 @@
 |-------|--------------|
 | Algorithm | None, algorithm confusion |
 | Secret | Weak secrets, brute force |
-| clai-helpersms | Expiration, issuer, audience |
+| claims | Expiration, issuer, audience |
 | Signature | Manipulation, key injection |
 
 ### Session Testing

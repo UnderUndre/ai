@@ -18,7 +18,7 @@
 Important:
 ├── Always verify signature
 ├── Check expiration
-├── Include minimal clai-helpersms
+├── Include minimal claims
 ├── Use short expiry + refresh tokens
 └── Never store sensitive data in JWT
 ```
