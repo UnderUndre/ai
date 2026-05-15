@@ -125,7 +125,7 @@ function parseGithubRepo(url: string): { owner: string; repo: string } | null {
   return { owner: match[1]!, repo: match[2]!.replace(/\.git$/, "") };
 }
 
-function resolveAuth(): string | undefined {
+export function resolveAuth(): string | undefined {
   // 1. GH_TOKEN env
   if (process.env.GH_TOKEN) return process.env.GH_TOKEN;
 

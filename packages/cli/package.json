@@ -57,7 +57,9 @@
     "citty": "^0.1.0",
     "consola": "^3.0.0",
     "pathe": "^2.0.0",
-    "defu": "^6.0.0"
+    "defu": "^6.0.0",
+    "@inquirer/prompts": "^7.0.0",
+    "cli-table3": "^0.6.0"
   },
   "devDependencies": {
     "vitest": "^3.0.0",

@@ -8,6 +8,7 @@ Write once in Claude format. Sync everywhere.
 
 - [Quick Start](#quick-start)
 - [Commands](#commands)
+- [Fleet](#fleet)
 - [Global Flags](#global-flags)
 - [Protected Slots](#protected-slots)
 - [Configuration](#configuration)
@@ -213,6 +214,113 @@ helpers recover <--resume | --rollback | --abandon>
 | `--resume`   | Re-attempt from first incomplete journal entry                                   |
 | `--rollback` | Restore backups, return to pre-sync state                                        |
 | `--abandon`  | Delete journal + backups, leave files as-is. **Destructive** -- requires `--yes` |
+
+## Fleet
+
+Manage clai-helpers across multiple GitHub repos from a single machine. Fleet discovers all repos with `helpers-lock.json`, reports drift, and syncs them in bulk.
+
+### Prerequisites
+
+Fleet commands require a GitHub token. Auth resolution chain:
+
+1. `--auth <token>` flag (if provided)
+2. `GH_TOKEN` environment variable
+3. `GIGET_AUTH` environment variable
+4. `gh auth token` (GitHub CLI, if installed)
+
+```bash
+export GH_TOKEN=ghp_your_token_here
+# or: gh auth login
+```
+
+### `helpers fleet list`
+
+Discover all GitHub repos with clai-helpers installed and display their status.
+
+```bash
+helpers fleet list [options]
+```
+
+| Flag         | Type    | Default | Description                      |
+| ------------ | ------- | ------- | -------------------------------- |
+| `--filter`   | string  | --      | Glob pattern to filter repos     |
+| `--json`     | boolean | `false` | Output as JSON                   |
+| `--no-color` | boolean | `false` | Disable colored output           |
+| `--verbose`  | boolean | `false` | Extended logging                 |
+
+Running `helpers fleet` without a subcommand delegates to `fleet list`.
+
+### `helpers fleet sync`
+
+Sync clai-helpers across selected GitHub repos. Three modes available:
+
+```bash
+helpers fleet sync [options]
+```
+
+| Flag             | Type    | Default | Description                                  |
+| ---------------- | ------- | ------- | -------------------------------------------- |
+| `--all`          | boolean | `false` | Sync all active repos                        |
+| `--repo <name>`  | string  | --      | Sync specific repo(s). Repeatable            |
+| `--filter <pat>` | string  | --      | Sync repos matching glob pattern             |
+| `--mode`         | string  | `pr`    | Sync mode: `pr`, `push`, or `patch`          |
+| `--patch-output` | string  | `./.fleet-patches` | Output directory for patch files    |
+| `--yes`          | boolean | `false` | Auto-confirm (non-interactive)               |
+| `--dry-run`      | boolean | `false` | Preview without making changes               |
+
+Selection flags (`--all`, `--repo`, `--filter`) are mutually exclusive. In interactive mode (TTY), a picker UI is shown when no selection flag is provided.
+
+#### Sync modes
+
+| Mode    | Description                                                        |
+| ------- | ------------------------------------------------------------------ |
+| `pr`    | Create a pull request per repo (default). Safe for protected branches. |
+| `push`  | Commit and push directly to the default branch. Requires `--yes` in non-interactive. |
+| `patch` | Generate `.patch` files to disk. No git operations. Useful for review. |
+
+#### Examples
+
+```bash
+# PR mode (default) — create a PR for a single repo
+helpers fleet sync --repo owner/repo --mode pr
+
+# Push mode — sync all repos, auto-confirm
+helpers fleet sync --all --mode push --yes
+
+# Patch mode — generate patches for all repos
+helpers fleet sync --all --mode patch --patch-output ./.fleet-patches
+
+# Dry run — preview what would change
+helpers fleet sync --all --mode pr --dry-run
+```
+
+### `helpers fleet add-org`
+
+Add a GitHub organization to the fleet discovery scope.
+
+```bash
+helpers fleet add-org <org>
+```
+
+### `helpers fleet remove-org`
+
+Remove a GitHub organization from the fleet discovery scope.
+
+```bash
+helpers fleet remove-org <org>
+```
+
+### Common errors
+
+| Error                              | Likely cause                                       | Fix                                                                  |
+| ---------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------- |
+| `auth required: ...`               | No token in env or `gh auth`                       | `export GH_TOKEN=...` or `gh auth login`                            |
+| `github/rate-limited`              | >5000 API calls/h hit                              | Wait until reset (printed in error message)                         |
+| `git/push-rejected (branch protection)` | Branch protection requires reviewers          | Use `--mode pr` instead of `--mode push`                            |
+| `lockfile/malformed`               | A repo's `helpers-lock.json` is broken             | Open the repo, fix manually, re-run                                 |
+| `config/malformed`                 | Typo in `~/.config/clai-helpers/fleet.json`        | Error message names the field; fix and re-run                       |
+
+For deeper documentation, see [`specs/003-fleet-sync/quickstart.md`](../../specs/003-fleet-sync/quickstart.md).
 
 ## Global Flags
 
