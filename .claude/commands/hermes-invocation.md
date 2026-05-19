@@ -1,5 +1,7 @@
 # Hermes CLI — Non-Interactive Invocation Pattern
 
+выполни промт с помощью хермеса и проверь его работу
+
 Hermes uses `prompt_toolkit` which requires a Win32 console. Non-TTY shells (bash, subprocess) crash with `NoConsoleScreenBufferError`. Solution: monkey-patch `prompt_toolkit.output.defaults.create_output` via Python wrapper.
 
 ## Working Command
