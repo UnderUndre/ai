@@ -268,6 +268,48 @@ graph LR
 
 ---
 
+## Agent Dispatch Plan
+
+> For each agent that has tasks, provide the context needed to spawn a subagent (Claude Code) or switch role context (Gemini/Copilot). The orchestrator or human uses this table to dispatch without re-reading plan.md.
+
+| Agent | Subagent | Skills | Input Context | Tasks | Files |
+|-------|----------|--------|---------------|-------|-------|
+| `[SETUP]` | — (orchestrator) | — | plan.md §structure | T001, T002 | `package.json`, `tsconfig.json`, project root |
+| `[DB]` | `database-architect` | `database-design` | data-model.md, plan.md §storage | T004, T007, T012, T013 | `src/models/`, `migrations/` |
+| `[BE]` | `backend-specialist` | `api-patterns`, `system-design-patterns` | contracts/, plan.md §tech-stack, data-model.md §entities | T005, T006, T008, T014, T015 | `src/api/`, `src/services/`, `src/middleware/` |
+| `[FE]` | `frontend-specialist` | `react-patterns`, `tailwind-patterns`, `frontend-design` | contracts/ §endpoints, plan.md §ui-framework | T016, T017 | `src/components/`, `src/pages/` |
+| `[OPS]` | `devops-engineer` | `deployment-procedures` | plan.md §infra, quickstart.md | T003, T009 | `Dockerfile`, `.github/workflows/`, `infra/` |
+| `[E2E]` | `test-engineer` | `testing-patterns`, `webapp-testing` | contracts/, quickstart.md §scenarios | T011 | `tests/e2e/`, `tests/integration/` |
+| `[SEC]` | `security-auditor` | `vulnerability-scanner` | spec.md §security, plan.md §auth | TXXX | project-wide |
+
+<!--
+  ============================================================================
+  GENERATOR RULES for Agent Dispatch Plan:
+
+  1. Only include agents that have actual tasks (skip unused conditional agents)
+  2. Skills: pull from .claude/agents/<agent>.md frontmatter `skills:` field
+  3. Input Context: list specific sections from plan.md/data-model.md/contracts/
+     that the agent needs — NOT the whole file
+  4. Tasks: list actual task IDs assigned to this agent
+  5. Files: list directories/files the agent will create or modify
+  6. For conditional agents ([PERF], [DOC], [DEBUG], [REFACTOR], [SEO], [MOBILE],
+     [UIUX], [PENTEST], [GAME]) — add rows only when tasks exist
+
+  Additional conditional agent mappings (add row if tasks exist):
+  - [PERF]     → performance-optimizer  → performance-profiling
+  - [DOC]      → documentation-writer   → documentation-templates
+  - [DEBUG]    → debugger               → systematic-debugging
+  - [REFACTOR] → (general-purpose)      → legacy-code, testing-patterns
+  - [SEO]      → seo-specialist         → seo-fundamentals, geo-fundamentals
+  - [MOBILE]   → mobile-developer       → mobile-design + framework-specific
+  - [UIUX]     → (general-purpose)      → ui-ux-pro-max, frontend-design
+  - [PENTEST]  → penetration-tester     → red-team-tactics
+  - [GAME]     → game-developer         → game-development
+  ============================================================================
+-->
+
+---
+
 ## Implementation Strategy
 
 ### MVP First (User Story 1 Only)

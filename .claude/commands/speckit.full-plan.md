@@ -54,6 +54,7 @@ Without pausing, execute the **full** `/speckit.tasks` workflow as defined in `s
    - Extract tech stack, user stories, entities, contracts
    - Assign [AGENT] tags, extract shared files, resolve dependencies
    - Generate parallel lanes, validate dependency graph
+   - Generate **Agent Dispatch Plan** (subagent × skills × input context × files)
 5. **Generate tasks.md** using `.specify/templates/tasks-template.md`
 6. Snapshot stage: `snapshot-stage.ps1 -Stage tasks -Slug <slug>`
 
@@ -65,5 +66,5 @@ After both phases complete, report:
 
 - Branch name
 - Phase 1: plan.md path, generated artifacts list, architecture.md updates
-- Phase 2: tasks.md path, total task count, tasks per agent, parallel lanes, critical path, suggested MVP scope
+- Phase 2: tasks.md path, total task count, tasks per agent, parallel lanes, critical path, agent dispatch plan, suggested MVP scope
 - Suggested next command: `/speckit.analyze` or `/speckit.implement`
