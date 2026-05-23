@@ -6,3 +6,7 @@
 	path = underproxy
 	url = git@github.com:UnderUndre/underproxy.git
 	ignore = dirty
+[submodule "undrecreaitwins"]
+	path = undrecreaitwins
+	url = git@github.com:UnderUndre/undrecreaitwins.git
+	ignore = dirty
