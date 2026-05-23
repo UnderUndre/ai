@@ -129,7 +129,7 @@ If your Hermes install pre-dates `-z` / `-Q` flags (v0.9 or older), use this wra
 
 ```bash
 export HERMES_PROMPT="$(cat .hermes-prompt.txt)"
-TERM=dumb NO_COLOR=1 PROMPT_TOOLKIT_NO_CPR=1 "C:\Users\Undre\AppData\Local\hermes\hermes-agent\venv\Scripts\python.exe" -c "
+TERM=dumb NO_COLOR=1 PROMPT_TOOLKIT_NO_CPR=1 "C:\Users\[username]\AppData\Local\hermes\hermes-agent\venv\Scripts\python.exe" -c "
 import sys, os
 os.environ['TERM'] = 'dumb'
 os.environ['NO_COLOR'] = '1'
